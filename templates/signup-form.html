@@ -1,13 +1,33 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <body>
-            <h1>Signup</h1>
-
-
-
-
-
-        </body>
-    </head>
+<head>
+	<title>Signup page</title>
+</head>
+<body>
+	<h1>Signup</h1>
+	<form method="post">
+		<table>
+			<tr>
+				<td class="label">Username</td>
+				<td><input name="username" type="text" value="{{username}}"></td>
+				<td class="error">{{error_username}}</td>
+			</tr>
+			<tr>
+				<td class="label">Password</td>
+				<td><input name="password" type="password" value=""></td>
+				<td class="error">{{error_password}}</td>
+			</tr>
+			<tr>
+				<td class="label">Verify Password</td>
+				<td><input name="verify" type="password" value=""></td>
+				<td class="error">{{error_verify}}</td>
+			</tr>
+			<tr>
+				<td class="label">Email (optional)</td>
+				<td><input name="email" type="text" value="{{email}}"></td>
+				<td class="error">{{error_email}}</td>
+			</tr>
+		</table><input type="submit">
+	</form>
+</body>
 </html>
