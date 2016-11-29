@@ -1,5 +1,8 @@
 import os
 import re
+import random
+import hashlib
+import hmac
 from string import letters
 
 import webapp2
@@ -13,10 +16,18 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                 autoescape = True)
 
 
-# REVIEW: *a and **kw are confusing concepts.  I learned more at https://docs.python.org/2/tutorial/controlflow.html to read more information.
+# REVIEW: *a and **kw are confusing concepts.  I learned more at https://docs.python.org/2/tutorial/controlflow.html
 def render_str(template, **params):
     t = jinja_env.get_template(template)
     return t.render(params)
+
+def make_secure_val(val):
+    return "%s|%s" % (val, hmac.new(secret, val).hexdigest())
+
+def check_secure_val(secure_val):
+    val = secure_val.split('|')[0]
+    if secure_val == make_secure_val(val):
+        return val
 
 # REVIEW: This is a quality of life class that lets you avoid some typing.  Self was a difficult concept for me to grasp, but this answer at stack overflow epxlains it well: http://stackoverflow.com/a/2709832
 class BlogHandler(webapp2.RequestHandler):
@@ -29,20 +40,48 @@ class BlogHandler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.response.out.write(render_str(template, **kw))
 
+    def set_secure_cookie(self, name, val):
+        cookie_val = make_secure_val(val)
+        self.response.headers.add_header(
+        'Set-Cookie',
+        '%s=%s; Path=/' % (name, cookie_val))
+
+    def read_secure_cookie(self, name):
+        cookie_val = self.request.cookies.get(name)
+        return cookie_val and check_secure_val(cookie_val)
+
+    def login(self, user):
+        self.set_secure_cookie('user_id', str(user.key().id()))
+
+    def logout(self):
+        self.response.headers.add_header('Set-Cookie',
+        'user_id=; Path=/')
+
+    def initialize(self, *a, **kw):
+        webapp2.RequestHandler.initialize(self, *a, **kw)
+        uid = self.read_secure_cookie('user_id')
+        self.user = uid and User.by_id(int(uid))
+
 #Set root key for posts to keep posts organized by specific blog, if multiple blogs are made.
 def blog_key(name = 'default'):
     return db.Key.from_path('blogs', name)
 
 # REVIEW: Database model to store posts
-
 class Post(ndb.Model):
-    pass
+    subject = db.StringProperty(required = True)
+    content = db.TextProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+    last_modified = db.DateTimeProperty(auto_now = True)
+
+    def render(self):
+        self._render_text = self.content.replace('\n', '<br>')
+        return render_str("post.html", p = self)
+
 # REVIEW: Database model to store users
 class Users(ndb.Model):
     username = ndb.StringProperty(required = True)
     password = ndb.TextProperty(required = True)
-    verify_password = ndb.TextProperty(required = True)
-    email = ndb.StringProperty(required = True)
+    email = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add = True)
 
 class BlogMain(BlogHandler):
@@ -52,7 +91,7 @@ class BlogMain(BlogHandler):
 class NewPost(BlogHandler):
     def get(self):
         self.render('newpost.html')
-
+# REVIEW: Functions using regular expressions to determine validity of input
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
     return username and USER_RE.match(username)
