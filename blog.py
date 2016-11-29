@@ -12,9 +12,14 @@ template_dir = os.path.join(os.path.dirname(__file__),'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                 autoescape = True)
 
+
+# REVIEW: *a and **kw are confusing concepts.  I learned more at https://docs.python.org/2/tutorial/controlflow.html to read more information.
+
 def render_str(template, **params):
     t = jinja_env.get_template(template)
     return t.render(params)
+
+# REVIEW: This is a quality of life class that lets you avoid some typing.  Self was a difficult concept for me to grasp, but this answer at stack overflow epxlains it well: http://stackoverflow.com/a/2709832
 
 class BlogHandler(webapp2.RequestHandler):
     def render(self, template, **kw):
@@ -65,8 +70,20 @@ class Signup(BlogHandler):
             params['error_username'] = "Invalid username"
             have_error = True
 
+        if not valid_password(password):
+            params['error_password'] = "Invalid password"
+            have_error = True
+        elif password != verify:
+            params['error_verify'] = "Passwords do not match"
+
+        if not valid_email(email):
+            params['error_email'] = "Invalid email"
+            have_error = True
+
         if have_error:
             self.render('signup-form.html', **params)
+        else:
+            self.redirect('/welcome')
 
 class Welcome(BlogHandler):
     def get(self):
