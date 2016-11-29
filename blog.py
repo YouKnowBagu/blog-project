@@ -14,23 +14,36 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
 
 
 # REVIEW: *a and **kw are confusing concepts.  I learned more at https://docs.python.org/2/tutorial/controlflow.html to read more information.
-
 def render_str(template, **params):
     t = jinja_env.get_template(template)
     return t.render(params)
 
 # REVIEW: This is a quality of life class that lets you avoid some typing.  Self was a difficult concept for me to grasp, but this answer at stack overflow epxlains it well: http://stackoverflow.com/a/2709832
-
 class BlogHandler(webapp2.RequestHandler):
-    def render(self, template, **kw):
-        self.response.out.write(render_str(template, **kw))
-
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
+
+    def render_str(self, template, **params):
+        return render_str(template, **params)
+
+    def render(self, template, **kw):
+        self.response.out.write(render_str(template, **kw))
 
 #Set root key for posts to keep posts organized by specific blog, if multiple blogs are made.
 def blog_key(name = 'default'):
     return db.Key.from_path('blogs', name)
+
+# REVIEW: Database model to store posts
+
+class Post(ndb.Model):
+    pass
+# REVIEW: Database model to store users
+class Users(ndb.Model):
+    username = ndb.StringProperty(required = True)
+    password = ndb.TextProperty(required = True)
+    verify_password = ndb.TextProperty(required = True)
+    email = ndb.StringProperty(required = True)
+    created = ndb.DateTimeProperty(auto_now_add = True)
 
 class BlogMain(BlogHandler):
     def get(self):
@@ -87,7 +100,11 @@ class Signup(BlogHandler):
 
 class Welcome(BlogHandler):
     def get(self):
-        self.render('welcome.html')
+        username = self.request.get("username")
+        if valid_username(username):
+            self.render('welcome.html')
+        else:
+            self.redirect('/signup')
 
 # REVIEW: add individual post pages
 app = webapp2.WSGIApplication([('/', BlogMain),
