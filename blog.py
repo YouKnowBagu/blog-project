@@ -8,15 +8,15 @@ from string import letters
 import webapp2
 import jinja2
 
-# REVIEW: Using NDB instead of DB per googles recommendation
-from google.appengine.ext import ndb
+from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__),'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                 autoescape = True)
 
+secret = '130fkjU772ifha096%#$72jl7nnuajv987w3nklsgloayvnervqi'
 
-# REVIEW: *a and **kw are confusing concepts.  I learned more at https://docs.python.org/2/tutorial/controlflow.html
+# REVIEW: *a and **kw were confusing concepts.  I learned more at https://docs.python.org/2/tutorial/controlflow.html
 def render_str(template, **params):
     t = jinja_env.get_template(template)
     return t.render(params)
@@ -29,16 +29,17 @@ def check_secure_val(secure_val):
     if secure_val == make_secure_val(val):
         return val
 
-# REVIEW: This is a quality of life class that lets you avoid some typing.  Self was a difficult concept for me to grasp, but this answer at stack overflow epxlains it well: http://stackoverflow.com/a/2709832
+# REVIEW: Self was a difficult concept for me to grasp, but this answer at stack overflow epxlains it well: http://stackoverflow.com/a/2709832
 class BlogHandler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
     def render_str(self, template, **params):
+        params['user'] = self.user
         return render_str(template, **params)
 
     def render(self, template, **kw):
-        self.response.out.write(render_str(template, **kw))
+        self.write(self.render_str(template, **kw))
 
     def set_secure_cookie(self, name, val):
         cookie_val = make_secure_val(val)
@@ -62,12 +63,62 @@ class BlogHandler(webapp2.RequestHandler):
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
 
+def render_post(response, post):
+    response.out.write('<b>' + post.subject + '</b><br>')
+    response.out.write(post.content)
+
+##### Password security
+def make_salt(length = 5):
+    return ''.join(random.choice(letters) for x in xrange(length))
+
+def make_pw_hash(name, pw, salt = None):
+    if not salt:
+        salt = make_salt()
+    h = hashlib.sha256(name + pw + salt).hexdigest()
+    return '%s,%s' % (salt, h)
+
+def valid_pw(name, password, h):
+    salt = h.split(',')[0]
+    return h == make_pw_hash(name, password, salt)
+
+def users_key(group = 'default'):
+    return db.Key.from_path('users', group)
+
+# REVIEW: Database model to store users
+class User(db.Model):
+    name = db.StringProperty(required = True)
+    pw_hash = db.StringProperty(required = True)
+    email = db.StringProperty()
+
+    @classmethod
+    def by_id(cls, uid):
+        return User.get_by_id(uid, parent = users_key())
+
+    @classmethod
+    def by_name(cls, name):
+        u = User.all().filter('name =', name).get()
+        return u
+
+    @classmethod
+    def register(cls, name, pw, email = None):
+        pw_hash = make_pw_hash(name, pw)
+        return User(parent = users_key(),
+                    name = name,
+                    pw_hash = pw_hash,
+                    email = email)
+
+    @classmethod
+    def login(cls, name, pw):
+        u = cls.by_name(name)
+        if u and valid_pw(name, pw, u.pw_hash):
+            return u
+
 #Set root key for posts to keep posts organized by specific blog, if multiple blogs are made.
 def blog_key(name = 'default'):
     return db.Key.from_path('blogs', name)
-
 # REVIEW: Database model to store posts
-class Post(ndb.Model):
+
+class Post(db.Model):
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
@@ -77,20 +128,45 @@ class Post(ndb.Model):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
 
-# REVIEW: Database model to store users
-class Users(ndb.Model):
-    username = ndb.StringProperty(required = True)
-    password = ndb.TextProperty(required = True)
-    email = ndb.StringProperty()
-    created = ndb.DateTimeProperty(auto_now_add = True)
-
 class BlogMain(BlogHandler):
     def get(self):
-        self.render('blog.html')
+        posts = greetings = Post.all().order('created')
+        self.render('blog.html', posts = posts)
+
+class PostPage(BlogHandler):
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id),
+        parent=blog_key())
+        post = db.get(key)
+
+        if not post:
+            self.error(404)
+            return
+
+        self.render('permalink.html', post = post)
 
 class NewPost(BlogHandler):
     def get(self):
-        self.render('newpost.html')
+        if self.user:
+            self.render('newpost.html')
+        else:
+            self.redirect('/login')
+
+    def post(self):
+        if not self.user:
+            self.redirect('/blog')
+
+        subject = self.request.get('subject')
+        content = self.request.get('content')
+
+        if subject and content:
+            p = Post(parent = blog_key(), subject =subject, content = content)
+            p.put()
+            self.redirect('/blog/%s' % str(p.key().id()))
+        else:
+            error = "Subject and content required"
+            self.render("newpost.html", subject=subject, content=content, error=error)
+
 # REVIEW: Functions using regular expressions to determine validity of input
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
@@ -110,44 +186,98 @@ class Signup(BlogHandler):
 
     def post(self):
         have_error = False
-        username = self.request.get('username')
-        password = self.request.get('password')
-        verify = self.request.get('verify')
-        email = self.request.get('email')
+        self.username = self.request.get('username')
+        self.password = self.request.get('password')
+        self.verify = self.request.get('verify')
+        self.email = self.request.get('email')
 
-        params = dict(username = username,
-                      email = email)
+        params = dict(username = self.username,
+                      email = self.email)
 
-        if not valid_username(username):
-            params['error_username'] = "Invalid username"
+        if not valid_username(self.username):
+            params['error_username'] = "Invalid username."
             have_error = True
 
-        if not valid_password(password):
-            params['error_password'] = "Invalid password"
+        if not valid_password(self.password):
+            params['error_password'] = "Invalid password."
             have_error = True
-        elif password != verify:
+        elif self.password != self.verify:
             params['error_verify'] = "Passwords do not match"
+            have_error = True
 
-        if not valid_email(email):
+        if not valid_email(self.email):
             params['error_email'] = "Invalid email"
             have_error = True
 
         if have_error:
             self.render('signup-form.html', **params)
         else:
-            self.redirect('/welcome')
+            self.done()
+
+    def done(self, *a, **kw):
+        raise NotImplementedError
+
+# class Unit2Signup(Signup):
+#     def done(self):
+#         self.redirect('/unit2/welcome?name=' + self.name)
+
+class Register(Signup):
+    def done(self):
+        #make sure the user doesn't already exist
+        u = User.by_name(self.username)
+        if u:
+            msg = 'That user already exists.'
+            self.render('signup-form.html', error_username = msg)
+        else:
+            u = User.register(self.username, self.password, self.email)
+            u.put()
+
+            self.login(u)
+            self.redirect('/blog')
+
+class Login(BlogHandler):
+    def get(self):
+        self.render('login-form.html')
+
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+
+        u = User.login(username, password)
+        if u:
+            self.login(u)
+            self.redirect('/blog')
+        else:
+            msg = 'Invalid login'
+            self.render('login-form.html', error = msg)
+
+class Logout(BlogHandler):
+    def get(self):
+        self.logout()
+        self.redirect('/blog')
+
+class Unit3Welcome(BlogHandler):
+    def get(self):
+        if self.user:
+            self.render('welcome.html', username = self.user.name)
+        else:
+            self.redirect('/signup')
 
 class Welcome(BlogHandler):
     def get(self):
-        username = self.request.get("username")
+        name = self.request.get("name")
         if valid_username(username):
-            self.render('welcome.html')
+            self.render('welcome.html', username = username)
         else:
             self.redirect('/signup')
 
 # REVIEW: add individual post pages
-app = webapp2.WSGIApplication([('/', BlogMain),
-                            ('/newpost', NewPost),
-                            ('/welcome', Welcome),
-                            ('/signup', Signup)],
+app = webapp2.WSGIApplication([('/blog', BlogMain),
+                            ('/blog/newpost', NewPost),
+                            ('/blog/welcome', Welcome),
+                            ('/login', Login),
+                            ('/blog/([0-9]+)', PostPage),
+                            ('/logout', Logout),
+                            ('/signup', Register),
+                            ],
                             debug=True)
