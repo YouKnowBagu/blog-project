@@ -67,6 +67,10 @@ def render_post(response, post):
     response.out.write('<b>' + post.subject + '</b><br>')
     response.out.write(post.content)
 
+class Landing(BlogHandler):
+  def get(self):
+      self.render('blog.html')
+
 ##### Password security
 def make_salt(length = 5):
     return ''.join(random.choice(letters) for x in xrange(length))
@@ -116,8 +120,8 @@ class User(db.Model):
 #Set root key for posts to keep posts organized by specific blog, if multiple blogs are made.
 def blog_key(name = 'default'):
     return db.Key.from_path('blogs', name)
-# REVIEW: Database model to store posts
 
+# REVIEW: Database model to store posts
 class Post(db.Model):
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
@@ -128,10 +132,10 @@ class Post(db.Model):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
 
-class BlogMain(BlogHandler):
+class BlogFront(BlogHandler):
     def get(self):
-        posts = greetings = Post.all().order('created')
-        self.render('blog.html', posts = posts)
+        posts = greetings = Post.all().order('-created')
+        self.render('front.html', posts = posts)
 
 class PostPage(BlogHandler):
     def get(self, post_id):
@@ -265,14 +269,15 @@ class Unit3Welcome(BlogHandler):
 
 class Welcome(BlogHandler):
     def get(self):
-        name = self.request.get("name")
+        username = self.request.get("username")
         if valid_username(username):
             self.render('welcome.html', username = username)
         else:
             self.redirect('/signup')
 
 # REVIEW: add individual post pages
-app = webapp2.WSGIApplication([('/blog', BlogMain),
+app = webapp2.WSGIApplication([('/', Landing),
+                            ('/blog/?', BlogFront),
                             ('/blog/newpost', NewPost),
                             ('/blog/welcome', Welcome),
                             ('/login', Login),
