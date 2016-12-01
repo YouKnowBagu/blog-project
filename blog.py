@@ -64,12 +64,12 @@ class BlogHandler(webapp2.RequestHandler):
         self.user = uid and User.by_id(int(uid))
 
 def render_post(response, post):
-    response.out.write('<b>' + post.subject + '</b><br>')
+    response.out.write('<b>' + post.subject +  post.author + '</b><br>')
     response.out.write(post.content)
 
 class Landing(BlogHandler):
   def get(self):
-      self.render('blog.html')
+      self.redirect('/blog')
 
 ##### Password security
 def make_salt(length = 5):
@@ -117,12 +117,20 @@ class User(db.Model):
         if u and valid_pw(name, pw, u.pw_hash):
             return u
 
+    def render(self):
+        return render_str("post.html", u = self)
+
 #Set root key for posts to keep posts organized by specific blog, if multiple blogs are made.
 def blog_key(name = 'default'):
     return db.Key.from_path('blogs', name)
 
+def user_key(name = 'default'):
+    return db.Key.from_path('User', name)
+
+
 # REVIEW: Database model to store posts
 class Post(db.Model):
+    user = db.ReferenceProperty(User, collection_name = 'posts_by_user')
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
@@ -130,18 +138,20 @@ class Post(db.Model):
 
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
-        return render_str("post.html", p = self)
+        return render_str("post.html", user = self.user.name, p = self)
 
 class BlogFront(BlogHandler):
     def get(self):
-        posts = greetings = Post.all().order('-created')
-        self.render('front.html', posts = posts)
+        posts = Post.all().order('-created')
+        self.render('front.html', username = self.user.name, posts = posts)
 
 class PostPage(BlogHandler):
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id),
-        parent=blog_key())
+        parent = blog_key())
         post = db.get(key)
+
+
 
         if not post:
             self.error(404)
@@ -163,13 +173,14 @@ class NewPost(BlogHandler):
         subject = self.request.get('subject')
         content = self.request.get('content')
 
+
         if subject and content:
-            p = Post(parent = blog_key(), subject =subject, content = content)
+            p = Post(parent = blog_key(), user = user, subject = subject, content = content)
             p.put()
-            self.redirect('/blog/%s' % str(p.key().id()))
+            self.redirect('/blog/%s' % str(p.key().id()), user)
         else:
             error = "Subject and content required"
-            self.render("newpost.html", subject=subject, content=content, error=error)
+            self.render("newpost.html", user = user, subject=subject, content=content, error=error)
 
 # REVIEW: Functions using regular expressions to determine validity of input
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -237,7 +248,7 @@ class Register(Signup):
             u.put()
 
             self.login(u)
-            self.redirect('/blog')
+            self.redirect('/blog/welcome')
 
 class Login(BlogHandler):
     def get(self):
@@ -255,17 +266,21 @@ class Login(BlogHandler):
             msg = 'Invalid login'
             self.render('login-form.html', error = msg)
 
+class EditPost(BlogHandler):
+    def get(self, post_id):
+        self.render('editpost.html')
+
 class Logout(BlogHandler):
     def get(self):
         self.logout()
         self.redirect('/blog')
 
-class Unit3Welcome(BlogHandler):
-    def get(self):
-        if self.user:
-            self.render('welcome.html', username = self.user.name)
-        else:
-            self.redirect('/signup')
+# class Unit3Welcome(BlogHandler):
+#     def get(self):
+#         if self.user:
+#             self.render('welcome.html', username = self.user.name)
+#         else:
+#             self.redirect('/signup')
 
 class Welcome(BlogHandler):
     def get(self):
@@ -282,6 +297,7 @@ app = webapp2.WSGIApplication([('/', Landing),
                             ('/blog/welcome', Welcome),
                             ('/login', Login),
                             ('/blog/([0-9]+)', PostPage),
+                            ('(r/blog/editpost/(\d+))', EditPost),
                             ('/logout', Logout),
                             ('/signup', Register),
                             ],

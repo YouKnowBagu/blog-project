@@ -1,32 +1,42 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <link type="text/css" rel="stylesheet" href="/static/main.css" />
-
-  <title>Blog</title>
+<html lang="en">
+  <head>
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans%7CTrirong:300" rel="stylesheet">
+  	<link href="css/bootstrap.css" rel="stylesheet">
+  	<meta charset="utf-8">
+  	<meta content="width=device-width, initial-scale=1" name="viewport">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <!-- Bootstrap -->
+      <title>Blog</title>
 </head>
 
 <body>
-    <div class="top-bar">
-  <a href="/blog" class="main-title">
-    Blog
+    <div class="container">
+<header class=row>
+  <a href="/blog" class="main-title col-md-12">
+    Home
   </a>
-
-  <div class="login-area">
+  <div class="login-area col-md-12">
     {% if user %}
-      {{user.name}} (<a class="login-link" href="/logout">logout</a>)
+      Logged in as: {{user.name}} (<a class="login-link" href="/logout">logout</a>)
+      <a class="newpost" href="/blog/newpost">Create new post</a>
+  </div>
     {% else %}
+
       <a class="login-link" href="/login">login</a>
       |
       <a class="login-link" href="/signup">signup</a>
+  </div>
     {% endif %}
-  </div>
-  </div>
-  <hr>
+  </header>
 
+<section class="row">
+    <hr>
   <div id="content">
   {% block content %}
   {% endblock %}
+  </section>
+  </div>
   </div>
 </body>
 
