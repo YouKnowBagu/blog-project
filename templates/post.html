@@ -1,24 +1,13 @@
-<article class="col-md-12 text-left">
-<div class="post">
-  <div class="post-heading">
-      <div class="post-date">
-        {{p.created.strftime("%b %d, %Y")}}
-      </div>
-    <div class="post-title">
-      {{p.subject}}
-      </div>
-      <div class="post-author">
-          {{user}}
-      </div>
-
-    <!-- <div class="post-date">
-      {{p.created.strftime("%b %d, %Y")}}
-    </div> -->
-  </div>
-
-  <div class="post-content">
-    {{p._render_text | safe}}
-  </div>
-  <br><br>
-</div>
-</article>
+{% extends "blog.html" %}
+{% block content %}
+{% for post in posts %}
+    <div class="post-preview">
+        <a href='/blog/{{post.key().id()}}' style="color:#666666;">
+            <h2 class="post-title">{{post.subject}}</h2>
+        </a>
+        <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
+        <p class="content">{{post.content | safe}}</p>
+    </div>
+    <hr>
+{% endfor %}
+{% endblock %}

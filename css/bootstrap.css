@@ -19,11 +19,6 @@ html {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
 }
-header {
-    padding-top: 15px;
-    display: inline-block;
-    flex-wrap: nowrap;
-}
 body {
   margin: 0;
 }
@@ -33,6 +28,7 @@ details,
 figcaption,
 figure,
 footer,
+header,
 hgroup,
 main,
 menu,
@@ -663,6 +659,7 @@ address {
   margin-left: auto;
   padding-left: 15px;
   padding-right: 15px;
+
 }
 @media (min-width: 768px) {
   .container {

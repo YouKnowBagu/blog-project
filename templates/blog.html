@@ -1,43 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-      <link href="https://fonts.googleapis.com/css?family=Open+Sans%7CTrirong:300" rel="stylesheet">
-  	<link href="css/bootstrap.css" rel="stylesheet">
-  	<meta charset="utf-8">
-  	<meta content="width=device-width, initial-scale=1" name="viewport">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <!-- Bootstrap -->
-      <title>Blog</title>
-</head>
 
-<body>
-    <div class="container">
-<header class=row>
-  <a href="/blog" class="main-title col-md-12">
-    Home
-  </a>
-  <div class="login-area col-md-12">
-    {% if user %}
-      Logged in as: {{user.name}} (<a class="login-link" href="/logout">logout</a>)
-      <a class="newpost" href="/blog/newpost">Create new post</a>
-  </div>
-    {% else %}
-
-      <a class="login-link" href="/login">login</a>
-      |
-      <a class="login-link" href="/signup">signup</a>
-  </div>
-    {% endif %}
-  </header>
-
-<section class="row">
-    <hr>
-  <div id="content">
-  {% block content %}
-  {% endblock %}
-  </section>
-  </div>
-  </div>
-</body>
-
+<html>
+    <head>
+        <!-- Bootstrap Core CSS -->
+        <link href="/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Custom CSS -->
+        <link href="/css/style.css" rel="stylesheet">
+        <title>Sean's Dumb Blog</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-default animated fadeInLeft">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                        <div class="navbar-header">
+                            <a href="/"><h3>
+                                Sean's Blog</h3></a>
+                        </div>
+                        <ul class="nav navbar-nav navbar-right">
+                            {% if not user %}
+                                <li><a style="color:white" href="/login">Login</a></li>
+                                <li><a style="color:white" href="/signup">Register</a></li>
+                            {% elif user %}
+                                <li><a style="color:white" href="/blog/newpost">New Post</a></li>
+                                <li><a style="color:white" href="/logout">Logout</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class='animated fadeInUp'>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+            </div>
+        </div>
+    </body>
 </html>
