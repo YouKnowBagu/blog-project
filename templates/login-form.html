@@ -2,15 +2,16 @@
 {% block content %}
 <h1>Login</h1>
 <form method="POST">
-    <label for="username">Username</label>
-    <input type="text" name="username" value="{{username}}" required>
-    <br>
-    <label for="password">Password</label>
-    <input type="password" name="password" value="" required>
-    <br>
+        <table>
+    <tr>
+        <td>
+    <label for="username">Username</label></td>
+    <td><input type="text" name="username" value="{{username}}" required></td>
+    <tr><td><label for="password">Password</label></td>
+    <td><input type="password" name="password" value="" required></td></tr>
     <div class="alert-danger">{{error}}</div>
-    <br>
-    <input type="submit" class="btn btn-success" value="Login">
+    <tr><td><input type="submit" class="btn btn-success" value="Login"></tr></td>
+</table>
 </form>
 <hr>
 Not registered yet?<br><br>

@@ -13,20 +13,6 @@ a:hover {
 img {
     margin-top: 10px;
 }
-body {
-    background-color: #CCCCCC;
-}
-table {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: left;
-    vertical-align: text-top;
-}
-section {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: left;
-}
 .navbar {
   border-radius: 0;
   margin-bottom: 10px;
