@@ -401,27 +401,8 @@
     "list-group.less",
     "panels.less",
     "responsive-embed.less",
-    "close.less",
-    "component-animations.less",
-    "dropdowns.less",
-    "tooltip.less",
-    "popovers.less",
-    "modals.less",
-    "carousel.less"
+    "close.less"
   ],
-  "js": [
-    "alert.js",
-    "button.js",
-    "carousel.js",
-    "dropdown.js",
-    "modal.js",
-    "tooltip.js",
-    "popover.js",
-    "tab.js",
-    "affix.js",
-    "collapse.js",
-    "scrollspy.js",
-    "transition.js"
-  ],
-  "customizerUrl": "http://getbootstrap.com/customize/?id=ce22d48d94a34438f69c66d38f6c12fd"
+  "js": [],
+  "customizerUrl": "http://getbootstrap.com/customize/?id=5e8431bcb33f59436572ac2e2f3177c3"
 }

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 
-<html>
+<html lang='en'>
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://fonts.googleapis.com/css?family=Press+Start+2P|Trirong" rel="stylesheet">
         <link rel="stylesheet" href="css/animate.css">
         <!-- Bootstrap Core CSS -->
@@ -9,34 +11,40 @@
         <link href="/css/bootstrap-theme.css" rel="stylesheet">
         <!-- Custom CSS -->
         <link href="/css/style.css" rel="stylesheet">
+        <script type='text/javascript' src='js/jquery.min.js'></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script type='text/javascript' src="js/boot.min.js"></script>
+
         <title>You Know Bagu</title>
     </head>
     <body>
+        <div class='container'>
         <nav class="navbar navbar-default">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <a class='pull-left' href='/'><img class='img-responsive'src='/images/avatar.png' alt='Main Logo'></a>
-                        <div class="navbar-header">
-
-                            <a href="/"><h3 style='color:#01ADED'>
-                                You Know Bagu</h3></a>
-
-                        <ul class="nav">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+                        <img class='img-responsive pull-left'src='/images/avatar.png' alt='Main Logo'>
+                            <a class='navbar-brand' href='/'><h3>You Know Bagu</h3></a>
+                        </div>
+                <div id='navbar'class='navbar-collapse collapse in' aria-expanded='true'>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a href='/'>Home</a></li>
                             {% if not user %}
-                                <li class='pull-left'><a style="color:#01ADED" href="/login">Login</a></li>
-                                <li class='pull-left'><a  class='text'style="color:#01ADED" href="/signup">Register</a></li>
+                                <li><a href="/login">Login</a></li>
+                                <li><a href="/signup">Register</a></li>
                             {% elif user %}
-                                <li class='pull-left'><a style="color:#01ADED" href="/blog/newpost">New Post</a></li>
-                                <li class='pull-left'><a style="color:#01ADED" href="/logout">Logout</a></li>
+                                <li><a href="/blog/newpost">New Post</a></li>
+                                <li><a href="/logout">Logout</a></li>
                             {% endif %}
                         </ul>
                     </div>
-                    </div>
-                </div>
-            </div>
+        </div>
         </nav>
-        <div class="container">
             <section class="row col-md-6 center-block">
                 {% for post in posts %}
                     <div class="post-preview">
@@ -50,7 +58,6 @@
                 {% endfor %}
                     {% block content %}
                     {% endblock %}
-            </div>
         </div>
-    </body>
+            </body>
 </html>

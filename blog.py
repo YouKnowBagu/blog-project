@@ -501,7 +501,7 @@ class EditPost(BlogHandler):
         elif self.request.get("cancel"):
             self.redirect('/blog/%s' % str(post.key().id()))
 
-class EditComment(Handler):
+class EditComment(BlogHandler):
 
     def get(self, post_id, comment_id):
         # get the blog and comment from blog id and comment id
