@@ -87,9 +87,10 @@ def valid_pw(name, password, h):
     salt = h.split(',')[0]
     return h == make_pw_hash(name, password, salt)
 
-def users_key(group = 'default'):
-    return db.Key.from_path('users', group)
-
+# def users_key(group = 'default'):
+#     return db.Key.from_path('User', group)
+def user_key(name = 'default'):
+    return db.Key.from_path('User', name)
 
 # REVIEW: Database model to store users
 class User(db.Model):
@@ -99,7 +100,7 @@ class User(db.Model):
 
     @classmethod
     def by_id(cls, uid):
-        return User.get_by_id(uid, parent = users_key())
+        return User.get_by_id(uid, parent = user_key())
 
     @classmethod
     def by_name(cls, name):
@@ -109,7 +110,7 @@ class User(db.Model):
     @classmethod
     def register(cls, name, pw, email = None):
         pw_hash = make_pw_hash(name, pw)
-        return User(parent = users_key(),
+        return User(parent = user_key(),
                     name = name,
                     pw_hash = pw_hash,
                     email = email)
@@ -134,8 +135,7 @@ def post_key(name = 'default'):
 # def group_key(name = 'default'):
 #     return db.Key.from_path('Group', name)
 
-# def user_key(name = 'default'):
-#     return db.Key.from_path('User', name)
+
 
 
 
@@ -294,8 +294,7 @@ class PostPage(BlogHandler):
                 if previously_liked == 0:
                     # add like to the likes database and refresh the page
                     l = Like(
-                        post=post, user=User.by_name(
-                            self.user.name))
+                        post=post, user=user_id)
                     l.put()
                     time.sleep(0.1)
                     self.redirect('/blog/%s' % str(post.key().id()))
@@ -316,11 +315,11 @@ class PostPage(BlogHandler):
                 # first check if the user is trying to unlike his own post
                     # then check if the user has unliked this post before
                 if previously_unliked == 0:
+                    user_id = User.by_name(self.user.name)
                     # add unlike to the unlikes database and refresh the
                     # page
                     ul = Unlike(
-                        post=post, user=User.by_name(
-                            self.user.name))
+                        post=post, user=user_id)
                     ul.put()
                     time.sleep(0.1)
                     self.redirect('/blog/%s' % str(post.key().id()))
@@ -340,12 +339,12 @@ class PostPage(BlogHandler):
             # if the user clicks on add comment get the comment text first
             elif self.request.get("add_comment"):
                 comment_text = self.request.get("comment_text")
+                user_id = User.by_name(self.user.name)
                 # check if there is anything entered in the comment text area
                 if comment_text:
                     # add comment to the comments database and refresh page
                     c = Comment(
-                        post=post, user=User.by_name(
-                            self.user.name), text=comment_text)
+                        post=post, user=user_id, text=comment_text)
                     c.put()
                     time.sleep(0.1)
                     self.redirect('/blog/%s' % str(post.key().id()))
@@ -502,7 +501,53 @@ class EditPost(BlogHandler):
         elif self.request.get("cancel"):
             self.redirect('/blog/%s' % str(post.key().id()))
 
+class EditComment(Handler):
 
+    def get(self, post_id, comment_id):
+        # get the blog and comment from blog id and comment id
+        post = Post.get_by_id(int(post_id), parent=post_key())
+        comment = Comment.get_by_id(int(comment_id))
+        # check if there is a comment associated with that id
+        if comment:
+            # check if this user is the author of this comment
+            if comment.user.name == self.user.name:
+                # take the user to the edit comment page and load the content
+                # of the comment
+                self.render("editcomment.html", comment_text=comment.text)
+            # otherwise if this user is the author of this comment throw and
+            # error
+            else:
+                error = "You cannot edit other users' comments'"
+                self.render("editcomment.html", edit_error=error)
+        # otherwise if there is no comment associated with that ID throw an
+        # error
+        else:
+            error = "This comment no longer exists"
+            self.render("editcomment.html", edit_error=error)
+
+def post(self, post_id, comment_id):
+    # if the user clicks on update comment
+    if self.request.get("update_comment"):
+        # get the comment for that comment id
+        comment = Comment.get_by_id(int(comment_id))
+        # check if this user is the author of this comment
+        if comment.user.name == self.user.name:
+            # update the text of the comment and redirect to the post page
+            comment.text = self.request.get('comment_text')
+            comment.put()
+            time.sleep(0.1)
+            self.redirect('/blog/%s' % str(post_id))
+        # otherwise if this user is the author of this comment throw and
+        # error
+        else:
+            error = "You cannot edit other users' comments'"
+            self.render(
+                "editcomment.html",
+                comment_text=comment.text,
+                edit_error=error)
+    # if the user clicks on cancel take the user to the post page
+    elif self.request.get("cancel"):
+        self.redirect('/blog/%s' % str(post_id))
 class Logout(BlogHandler):
     def get(self):
         self.logout()
