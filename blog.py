@@ -125,6 +125,9 @@ class User(db.Model):
 def blog_key(name = 'default'):
     return db.Key.from_path('blogs', name)
 
+def post_key(name = 'default'):
+    return db.Key.from_path('Post', name)
+
 
 # REVIEW: Placeholder in case I decide to add user groups later
 
@@ -235,7 +238,7 @@ class NewPost(BlogHandler):
         # and redirect us to the post page
         if subject and content:
             p = Post(
-                parent=blog_key(),
+                parent=post_key(),
                 subject=subject,
                 content=content,
                 user=user_id)
@@ -254,7 +257,7 @@ class NewPost(BlogHandler):
 class PostPage(BlogHandler):
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id),
-        parent = blog_key())
+        parent = post_key())
         post = db.get(key)
 
         if not post:
@@ -275,11 +278,11 @@ class PostPage(BlogHandler):
             comments_count=comments_count)
 
     def post(self, post_id):
-        key = db.Key.from_path("Post", int(post_id), parent=blog_key())
+        key = db.Key.from_path("Post", int(post_id), parent=post_key())
         post = db.get(key)
+        user_id = User.by_name(self.user.name)
         comments_count = Comment.count_by_post_id(post)
         post_comments = Comment.all_by_post_id(post)
-        user_id = User.by_name(self.user.name)
         likes = Like.by_post_id(post)
         unlikes = Unlike.by_post_id(post)
         previously_liked = Like.check_like(post, user_id)
@@ -458,7 +461,7 @@ class Login(BlogHandler):
 
 class EditPost(BlogHandler):
     def get(self, post_id):
-        key = db.Key.from_path("Post", int(post_id), parent=blog_key())
+        key = db.Key.from_path("Post", int(post_id), parent=post_key())
         post = db.get(key)
 
         # check if the user is logged in
@@ -469,7 +472,7 @@ class EditPost(BlogHandler):
 
     def post(self, post_id):
         # get the key for this blog post
-        key = db.Key.from_path("Post", int(post_id), parent=blog_key())
+        key = db.Key.from_path("Post", int(post_id), parent=post_key())
         post = db.get(key)
 
         # if the user clicks on update comment

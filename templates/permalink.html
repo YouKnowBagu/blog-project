@@ -6,6 +6,7 @@
     <p class="content">{{post.content | safe}}</p>
 
 </div>
+{% if user %}
 <form method="POST">
 {% if post.user.name != user.name %}
         <input type="submit" class="btn btn-success" name='like' value='&#128077; {{likes}} likes'>
@@ -15,6 +16,7 @@
         <input type="submit" class="btn btn-danger" name='delete' value="&#9003; delete">
 {% endif %}
 </form>
+{% endif %}
 
     <span class="alert-danger">{{error}}</span>
 <hr>
@@ -33,10 +35,10 @@
                     <small>Posted by {{comment.user.name}} on {{comment.created.strftime("%b %d, %Y")}}</small>
                 </div>
                 <div class="pull-right">
-                    <!-- {% if comment.user.name == user.name %}
+                    {% if comment.user.name == user.name %}
                         <a style="color:blue" href="/blog/{{post.key().id()}}/editcomment/{{comment.key().id()}}">edit</a> |
                         <a style="color:blue" href="/blog/{{post.key().id()}}/deletecomment/{{comment.key().id()}}">delete</a>
-                    {% endif %} -->
+                    {% endif %}
                 </div>
             </div>
         </div>
