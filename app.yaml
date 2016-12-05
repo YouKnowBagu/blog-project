@@ -13,9 +13,6 @@ handlers:
 - url: /.*
   script: blog.app
 
-- url: /js
-  static_dir: static/js
-
 libraries:
 - name: jinja2
   version: latest

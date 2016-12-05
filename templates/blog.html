@@ -5,59 +5,47 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://fonts.googleapis.com/css?family=Press+Start+2P|Trirong" rel="stylesheet">
-        <link rel="stylesheet" href="css/animate.css">
-        <!-- Bootstrap Core CSS -->
-        <link href="/css/bootstrap.css" rel="stylesheet">
-        <link href="/css/bootstrap-theme.css" rel="stylesheet">
-        <!-- Custom CSS -->
-        <link href="/css/style.css" rel="stylesheet">
-        <script type='text/javascript' src='js/jquery.min.js'></script>
-        <!-- Include all compiled plugins (below), or include individual files as needed -->
-        <script type='text/javascript' src="js/boot.min.js"></script>
-
+        <link ref="stylesheet" href="/css/bootstrap.css">
+        <link rel="stylesheet" href="/css/blog.css">
+        <link rel="stylesheet" href="/css/style.css">
         <title>You Know Bagu</title>
     </head>
     <body>
-        <div class='container'>
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-                        <img class='img-responsive pull-left'src='/images/avatar.png' alt='Main Logo'>
-                            <a class='navbar-brand' href='/'><h3>You Know Bagu</h3></a>
-                        </div>
-                <div id='navbar'class='navbar-collapse collapse in' aria-expanded='true'>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li><a href='/'>Home</a></li>
-                            {% if not user %}
-                                <li><a href="/login">Login</a></li>
-                                <li><a href="/signup">Register</a></li>
-                            {% elif user %}
-                                <li><a href="/blog/newpost">New Post</a></li>
-                                <li><a href="/logout">Logout</a></li>
-                            {% endif %}
-                        </ul>
+        <div class='blog-masthead'>
+            <div class="container">
+                <nav class='blog-nav'>
+                    <div class='brand-image'>
+                        <a class='blog-nav-image' href='/'><img src='images/avatar.png'></a>
                     </div>
+                    <a class='blog-nav-item' href='/'>Home</a>
+                    {% if not user %}
+
+                    <a class='blog-nav-item' href='/login'>Login</a>
+                    <a class='blog-nav-item' href='/signup'>Register</a>
+                    {% elif user %}
+
+                    <a class='blog-nav-item' href='/blog/newpost'>New Post</a>
+                    <a class='blog-nav-item' href='/logout'>Logout</a>
+
+                    {% endif %}
+                </nav>
+            </div>
         </div>
-        </nav>
-            <section class="row col-md-6 center-block">
-                {% for post in posts %}
+
+                    {% for post in posts %}
                     <div class="post-preview">
                         <a href='/blog/{{post.key().id()}}' style="color:#666666;">
                             <h2 class="post-title">{{post.subject}}</h2>
                         </a>
                         <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
                         <p class="content">{{post.content | safe}}</p>
-                    </div>
                     <hr>
                 {% endfor %}
                     {% block content %}
                     {% endblock %}
-        </div>
-            </body>
+                    </div>
+                </div>
+            </div>
+
+    </body>
 </html>
