@@ -86,11 +86,18 @@ def make_pw_hash(name, pw, salt = None):
 def valid_pw(name, password, h):
     salt = h.split(',')[0]
     return h == make_pw_hash(name, password, salt)
+##### blog_key is a placeholder in case the site is expanded to include more than one blog.
+def blog_key(name = 'default'):
+    return db.Key.from_path('blogs', name)
 
-# def users_key(group = 'default'):
-#     return db.Key.from_path('User', group)
 def user_key(name = 'default'):
     return db.Key.from_path('User', name)
+
+def post_key(name = 'default'):
+    return db.Key.from_path('Post', name)
+
+def check_path(self):
+    return self.request.path
 
 # REVIEW: Database model to store users
 class User(db.Model):
@@ -121,25 +128,7 @@ class User(db.Model):
         if u and valid_pw(name, pw, u.pw_hash):
             return u
 
-
-#Set root key for posts to keep posts organized by specific blog, if multiple blogs are made.
-def blog_key(name = 'default'):
-    return db.Key.from_path('blogs', name)
-
-def post_key(name = 'default'):
-    return db.Key.from_path('Post', name)
-
-
-# REVIEW: Placeholder in case I decide to add user groups later
-
-# def group_key(name = 'default'):
-#     return db.Key.from_path('Group', name)
-
-
-
-
-
-# REVIEW: Database model to store posts
+##### Database model to store posts with reference to User.
 class Post(db.Model):
     subject = db.StringProperty(required = True)
     content = db.TextProperty(required = True)
@@ -151,103 +140,87 @@ class Post(db.Model):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("permalink.html", post = self)
 
-
+##### Database model to store likes, referencing the post and user.
 class Like(db.Model):
     post = db.ReferenceProperty(Post, required=True)
     user = db.ReferenceProperty(User, required=True)
 
-    # get number of likes for a blog id
     @classmethod
     def by_post_id(cls, post_id):
-        l = Like.all().filter('post =', post_id)
-        return l.count()
+        like = Like.all().filter('post =', post_id)
+        return like.count()
 
-    # get number of likes for a blog and user id
     @classmethod
     def check_like(cls, post_id, user_id):
-        cl = Like.all().filter(
+        liked = Like.all().filter(
             'post =', post_id).filter(
             'user =', user_id)
-        return cl.count()
+        return liked.count()
 
-
-#=UNLIKES====================================================
-
-# create a database to store all unlikes
 class Unlike(db.Model):
     post = db.ReferenceProperty(Post, required=True)
     user = db.ReferenceProperty(User, required=True)
 
-    # get number of unlikes for a post id
     @classmethod
     def by_post_id(cls, post_id):
-        ul = Unlike.all().filter('post =', post_id)
-        return ul.count()
+        unlike = Unlike.all().filter('post =', post_id)
+        return unlike.count()
 
-    # get number of unlikes for a post and user id
     @classmethod
     def check_unlike(cls, post_id, user_id):
-        cul = Unlike.all().filter(
+        unliked = Unlike.all().filter(
             'post =', post_id).filter(
             'user =', user_id)
-        return cul.count()
+        return unliked.count()
 
+#### To store comments on individual posts, referencing Post and User.
 class Comment(db.Model):
     post = db.ReferenceProperty(Post, required=True)
     user = db.ReferenceProperty(User, required=True)
     created = db.DateTimeProperty(auto_now_add=True)
     text = db.TextProperty(required=True)
 
-    # get number of comments for a post id
     @classmethod
     def count_by_post_id(cls, post_id):
-        c = Comment.all().filter('post =', post_id)
-        return c.count()
+        comments = Comment.all().filter('post =', post_id)
+        return comments.count()
 
-    # get all comments for a specific post id
     @classmethod
     def all_by_post_id(cls, post_id):
-        c = Comment.all().filter('post =', post_id).order('created')
-        return c
+        comments = Comment.all().filter('post =', post_id).order('created')
+        return comments
 
 class BlogFront(BlogHandler):
     def get(self):
-        # get all blog posts
+        path_check = check_path(self)
         posts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC")
-        # if there are any existing blog posts render the page with those posts
         if posts:
-            self.render("post.html", posts=posts)
+            self.render("blog.html", posts=posts, path_check=path_check)
 
 class NewPost(BlogHandler):
     def get(self):
-        # if user is logged in take us to newpost page
+        path_check = check_path(self)
         if self.user:
             self.render('newpost.html')
-        # otherwise take us to login page
         else:
             self.redirect("/login")
     def post(self):
         if not self.user:
             self.redirect('/blog')
-        # get the subject, content of the post and username of the user
         subject = self.request.get("subject")
         content = self.request.get("content")
         user_id = User.by_name(self.user.name)
 
-        # if we have a subject and content of the post add it to the database
-        # and redirect us to the post page
         if subject and content:
-            p = Post(
+            post = Post(
                 parent=post_key(),
                 subject=subject,
                 content=content,
                 user=user_id)
-            p.put()
-            self.redirect('/blog/%s' % str(p.key().id()))
-        # othersie throw and error to let the user know that both subject and
-        # content are required
+            post.put()
+            self.redirect('/blog/%s' % str(post.key().id()))
         else:
-            post_error = "Please enter a subject and the blog content"
+            post_error = "All fields required"
             self.render(
                 "newpost.html",
                 subject=subject,
@@ -256,6 +229,7 @@ class NewPost(BlogHandler):
 
 class PostPage(BlogHandler):
     def get(self, post_id):
+        path_check = check_path(self)
         key = db.Key.from_path('Post', int(post_id),
         parent = post_key())
         post = db.get(key)
@@ -266,115 +240,91 @@ class PostPage(BlogHandler):
 
         likes = Like.by_post_id(post)
         unlikes = Unlike.by_post_id(post)
-        post_comments = Comment.all_by_post_id(post)
-        comments_count = Comment.count_by_post_id(post)
+        comments = Comment.all_by_post_id(post)
+        comment_count = Comment.count_by_post_id(post)
 
         self.render(
             "permalink.html",
             post=post,
             likes=likes,
             unlikes=unlikes,
-            post_comments=post_comments,
-            comments_count=comments_count)
+            comments=comments,
+            comment_count=comment_count)
 
     def post(self, post_id):
+
         key = db.Key.from_path("Post", int(post_id), parent=post_key())
         post = db.get(key)
         user_id = User.by_name(self.user.name)
-        comments_count = Comment.count_by_post_id(post)
-        post_comments = Comment.all_by_post_id(post)
+        comment_count = Comment.count_by_post_id(post)
+        comments = Comment.all_by_post_id(post)
         likes = Like.by_post_id(post)
         unlikes = Unlike.by_post_id(post)
-        previously_liked = Like.check_like(post, user_id)
-        previously_unliked = Unlike.check_unlike(post, user_id)
-        # check if the user is logged in
+        liked = Like.check_like(post, user_id)
+        unliked = Unlike.check_unlike(post, user_id)
+
         if self.user:
-            # if the user clicks on like
             if self.request.get("like"):
-                if previously_liked == 0:
-                    # add like to the likes database and refresh the page
-                    l = Like(
+                if liked == 0:
+                    like = Like(
                         post=post, user=user_id)
-                    l.put()
-                    time.sleep(0.1)
+                    like.put()
                     self.redirect('/blog/%s' % str(post.key().id()))
-                    # otherwise if the user has liked this post before throw
-                    # and error
                 else:
-                    error = "You have already liked this post"
+                    error = "You can only like a post one time."
                     self.render(
                         "permalink.html",
                         post=post,
                         likes=likes,
                         unlikes=unlikes,
                         error=error,
-                        comments_count=comments_count,
-                        post_comments=post_comments)
-            # if the user clicks on unlike
+                        comment_count=comment_count,
+                        comments=comments)
             elif self.request.get("unlike"):
-                # first check if the user is trying to unlike his own post
-                    # then check if the user has unliked this post before
-                if previously_unliked == 0:
-                    user_id = User.by_name(self.user.name)
-                    # add unlike to the unlikes database and refresh the
-                    # page
+                if unliked == 0:
                     ul = Unlike(
                         post=post, user=user_id)
                     ul.put()
                     time.sleep(0.1)
                     self.redirect('/blog/%s' % str(post.key().id()))
-                # otherwise if the user has unliked this post before throw
-                # and error
                 else:
-                    error = "You have already unliked this post"
+                    error = "You can only unlike a post one time."
                     self.render(
                         "permalink.html",
                         post=post,
                         likes=likes,
                         unlikes=unlikes,
                         error=error,
-                        comments_count=comments_count,
-                        post_comments=post_comments)
-
-            # if the user clicks on add comment get the comment text first
+                        comment_count=comment_count,
+                        comments=comments)
             elif self.request.get("add_comment"):
                 comment_text = self.request.get("comment_text")
-                user_id = User.by_name(self.user.name)
-                # check if there is anything entered in the comment text area
                 if comment_text:
-                    # add comment to the comments database and refresh page
-                    c = Comment(
+                    comment = Comment(
                         post=post, user=user_id, text=comment_text)
-                    c.put()
+                    comment.put()
                     time.sleep(0.1)
                     self.redirect('/blog/%s' % str(post.key().id()))
-                # otherwise if nothing has been entered in the text area throw
-                # an error
                 else:
-                    comment_error = "Please enter a comment in the text area to post"
+                    comment_error = "All fields required."
                     self.render(
                         "permalink.html",
                         post=post,
                         likes=likes,
                         unlikes=unlikes,
-                        comments_count=comments_count,
-                        post_comments=post_comments,
+                        comment_count=comment_count,
+                        comments=comments,
                         comment_error=comment_error)
-            # if the user clicks on edit post
             elif self.request.get("edit"):
-                # take the user to edit post page
                 self.redirect('/blog/editpost/%s' % str(post.key().id()))
-            # if the user clicks on delete
             elif self.request.get("delete"):
-                # delete the post and redirect to the main page
                 db.delete(key)
                 time.sleep(0.1)
                 self.redirect('/')
-        # otherwise if the user is not logged in take them to the login page
         else:
             self.redirect("/login")
 
-# REVIEW: Functions using regular expressions to determine validity of input
+#####: Functions using regular expressions to determine validity of input
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
     return username and USER_RE.match(username)
@@ -389,7 +339,8 @@ def valid_email(email):
 
 class Signup(BlogHandler):
     def get(self):
-        self.render('signup-form.html')
+        path_check = check_path(self)
+        self.render('signup-form.html', path_check=path_check)
 
     def post(self):
         have_error = False
@@ -417,137 +368,112 @@ class Signup(BlogHandler):
             have_error = True
 
         if have_error:
-            self.render('signup-form.html', **params)
+            self.render('signup-form.html', path_check=path_check, **params)
         else:
             self.done()
 
     def done(self, *a, **kw):
         raise NotImplementedError
 
-# class Unit2Signup(Signup):
-#     def done(self):
-#         self.redirect('/unit2/welcome?name=' + self.name)
 
 class Register(Signup):
     def done(self):
-        #make sure the user doesn't already exist
-        u = User.by_name(self.username)
-        if u:
-            msg = 'That user already exists.'
-            self.render('signup-form.html', error_username = msg)
+        path_check = check_path(self)
+        user = User.by_name(self.username)
+        if user:
+            error = 'That user already exists.'
+            self.render('signup-form.html', error_username = error, path_check = path_check)
         else:
-            u = User.register(self.username, self.password, self.email)
-            u.put()
+            user = User.register(self.username, self.password, self.email)
+            user.put()
 
-            self.login(u)
-            self.redirect('/blog/welcome')
+            self.login(user)
+            self.redirect('/blog/')
 
 class Login(BlogHandler):
     def get(self):
-        self.render('login-form.html')
+        path_check = check_path(self)
+        self.render('login-form.html', path_check=path_check)
 
     def post(self):
         username = self.request.get('username')
         password = self.request.get('password')
-
-        u = User.login(username, password)
-        if u:
-            self.login(u)
-            self.redirect('/blog/welcome')
+        path_check = check_path(self)
+        user = User.login(username, password)
+        if user:
+            self.login(user)
+            self.redirect('/blog/')
         else:
-            msg = 'Invalid login'
-            self.render('login-form.html', error = msg)
+            error = 'Invalid login'
+            self.render('login-form.html', error = error, path_check=path_check)
 
 class EditPost(BlogHandler):
     def get(self, post_id):
         key = db.Key.from_path("Post", int(post_id), parent=post_key())
         post = db.get(key)
 
-        # check if the user is logged in
         if self.user:
             self.render("editpost.html", post=post)
         else:
             self.redirect("/login")
 
     def post(self, post_id):
-        # get the key for this blog post
         key = db.Key.from_path("Post", int(post_id), parent=post_key())
         post = db.get(key)
 
-        # if the user clicks on update comment
         if self.request.get("update"):
 
-            # get the subject, content and user id when the form is submitted
             subject = self.request.get("subject")
             content = self.request.get("content").replace('\n', '<br>')
 
             if subject and content:
-                # update the blog post and redirect to the post page
                 post.subject = subject
                 post.content = content
                 post.put()
                 time.sleep(0.1)
                 self.redirect('/blog/%s' % str(post.key().id()))
-                # otherwise if both subject and content are not filled throw an
-                # error
             else:
-                post_error = "Please enter a subject and the blog content"
+                post_error = "All fields required."
                 self.render(
                     "editpost.html",
                     subject=subject,
                     content=content,
                     post_error=post_error)
-        # if the user clicks cancel take them to the post page
         elif self.request.get("cancel"):
             self.redirect('/blog/%s' % str(post.key().id()))
 
 class EditComment(BlogHandler):
 
     def get(self, post_id, comment_id):
-        # get the blog and comment from blog id and comment id
         post = Post.get_by_id(int(post_id), parent=post_key())
         comment = Comment.get_by_id(int(comment_id))
-        # check if there is a comment associated with that id
         if comment:
-            # check if this user is the author of this comment
             if comment.user.name == self.user.name:
-                # take the user to the edit comment page and load the content
-                # of the comment
                 self.render("editcomment.html", comment_text=comment.text)
-            # otherwise if this user is the author of this comment throw and
-            # error
             else:
                 error = "You cannot edit other users' comments'"
                 self.render("editcomment.html", edit_error=error)
-        # otherwise if there is no comment associated with that ID throw an
-        # error
         else:
             error = "This comment no longer exists"
             self.render("editcomment.html", edit_error=error)
 
-def post(self, post_id, comment_id):
-    # if the user clicks on update comment
-    if self.request.get("update_comment"):
-        # get the comment for that comment id
-        comment = Comment.get_by_id(int(comment_id))
-        # check if this user is the author of this comment
-        if comment.user.name == self.user.name:
-            # update the text of the comment and redirect to the post page
-            comment.text = self.request.get('comment_text')
-            comment.put()
-            time.sleep(0.1)
+    def post(self, post_id, comment_id):
+        if self.request.get("update_comment"):
+            comment = Comment.get_by_id(int(comment_id))
+            if comment.user.name == self.user.name:
+                comment.text = self.request.get('comment_text')
+                comment.put()
+                time.sleep(0.1)
+                self.redirect('/blog/%s' % str(post_id))
+            else:
+                error = "You cannot edit other users' comments'"
+                self.render(
+                    "editcomment.html",
+                    comment_text=comment.text,
+                    edit_error=error)
+        elif self.request.get("cancel"):
             self.redirect('/blog/%s' % str(post_id))
-        # otherwise if this user is the author of this comment throw and
-        # error
-        else:
-            error = "You cannot edit other users' comments'"
-            self.render(
-                "editcomment.html",
-                comment_text=comment.text,
-                edit_error=error)
-    # if the user clicks on cancel take the user to the post page
-    elif self.request.get("cancel"):
-        self.redirect('/blog/%s' % str(post_id))
+
 class Logout(BlogHandler):
     def get(self):
         self.logout()
@@ -556,11 +482,10 @@ class Logout(BlogHandler):
 class Welcome(BlogHandler):
     def get(self):
         if self.user:
-            self.render('blog.html', username = self.user.name)
+            self.render('blog.html', username = self.user.name, path_check=path_check)
         else:
             self.redirect('/signup')
 
-# REVIEW: add individual post pages
 app = webapp2.WSGIApplication([('/', Landing),
                             ('/blog/?', BlogFront),
                             ('/blog/newpost', NewPost),
@@ -568,6 +493,7 @@ app = webapp2.WSGIApplication([('/', Landing),
                             ('/login', Login),
                             ('/blog/([0-9]+)', PostPage),
                             ('/blog/editpost/([0-9]+)', EditPost),
+                            ('/blog/([0-9]+)/editcomment/([0-9]+)', EditComment),
                             ('/logout', Logout),
                             ('/signup', Register),
                             ],

@@ -1,0 +1,359 @@
+a {
+    text-decoration: none;
+}
+
+html {
+    display: block;
+}
+
+body {
+    padding: 0;
+    background: #202020;
+    color: #5D6063;
+    max-width: 100%;
+    font: 16px 'Trirong', sans-serif;
+    line-height: 1.57em;
+}
+
+.btn:hover {
+    background-color: #a15500;
+}
+
+.btn {
+    background-color: buttonface;
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    color: #000000;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px
+}
+
+.btn-block {
+    display: inline-block;
+    max-width: 50px;
+}
+
+p {
+    color: #82868A;
+    text-decoration: none;
+}
+
+h2 {
+    color: #728191;
+    text-decoration: none;
+}
+
+label {
+    max-width: 200px;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.main {
+    padding: 13px 0 0 0;
+}
+
+.header-row {
+    z-index: 1001;
+    display: block;
+    position: relative;
+    height: 45px;
+    width: 100%;
+    top: 0;
+    background: #2a4d6e;
+}
+
+.content {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/*.main-nav {
+margin: 0;
+padding: 1px 0;
+list-style-type: none;
+height: 26px;
+border-bottom: 1px solid black;
+display: block;
+border-color: #11385d;
+background-color: #04294C;
+}
+.main-nav li {
+    float: left;
+    margin: 0;
+    padding: 0;
+    width: 20%;
+}*/
+
+
+/*@media only screen and (max-width: 473px) {
+        .main-nav li {
+            width: 50%;
+            margin-top: auto;
+            margin-bottom: auto;
+            justify-content: center;
+        }
+    }
+.main-nav a {
+    position: relative;
+    display: block;
+    margin: 1px;
+    height: 24px;
+    font-size: 12px;
+    line-height: 24px;
+    text-decoration: none;
+    text-transform: uppercase;
+    text-align: center;
+    background: #04294C;
+    color: #728191;
+}*/
+
+
+/*<nav class="nav">
+	<ul>
+		<li class="current"><a href="#">Portfolio</a></li>
+		<li><a href="#">Illustration</a></li>
+		<li><a href="#">Web Design</a></li>
+		<li><a href="#">Print Media</a></li>
+		<li><a href="#">Graphic Design</a></li>
+	</ul>
+</nav>
+/* nav test*/
+
+.nav {
+    position: relative;
+    font-family: "Press Start 2P", cursive;
+    border-bottom: 1px solid black;
+    border-color: #11385d;
+    background-color: #04294C;
+}
+
+.nav ul {
+    margin: 0;
+    text-align: left;
+    padding: 0;
+}
+
+.nav li {
+    padding: 0;
+    list-style: none;
+    display: inline-block;
+    margin: 5px 5px 5px 0;
+}
+
+.nav a {
+    padding: 3px 12px;
+    text-decoration: none;
+    color: #999;
+    line-height: 100%;
+}
+
+.nav a:hover {
+    color: #000;
+}
+
+.nav .current a {
+    background: #a15500;
+    color: #fff;
+}
+
+.main-title {
+    color: #19BDFF;
+    font-family: "Press Start 2P";
+    font-size: 35px;
+    font-weight: bold;
+    text-align: left;
+    text-decoration: none;
+    position: absolute;
+    top: auto;
+    bottom: 10px;
+}
+
+
+/*.nav li a span {
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    width: 8px;
+    height: 8px;
+    background: #2a4d6e;
+}*/
+
+@media only screen and (max-width: 600px) {
+    .main-title {
+        font-size: 20px;
+    }
+    .nav {
+        position: relative;
+        min-height: 35px;
+    }
+    .nav ul {
+        width: 180px;
+        padding: 5px 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .nav li {
+        display: none;
+        margin: 0;
+    }
+    .nav .current {
+        display: block;
+    }
+    .nav a {
+        display: block;
+        padding: 5px 5px 5px 32px;
+        text-align: left;
+        font-size: .75em;
+    }
+    .nav .current a {
+        position: relative;
+        z-index: 1;
+        background: none;
+        color: #aaa;
+    }
+    .nav ul:hover {
+        background-image: none;
+    }
+    .nav ul:hover li {
+        display: block;
+        margin: 0 0 5px;
+    }
+    /*.nav ul:hover .current {
+		background: url(/images/tick.png) no-repeat;
+	}*/
+    /* right nav */
+    .nav.right ul {
+        left: auto;
+        right: 0;
+    }
+    /* center nav */
+    .nav.center ul {
+        left: 50%;
+        margin-left: -90px;
+    }
+}
+
+
+/* actual code, not test */
+
+
+/*.main-nav  {
+    display: flex;
+    height: 70px;
+    justify-content: space-around;
+}
+.main-nav a {
+    width: 50%;
+    height: 70px;
+    font-size: 35px;
+    line-height: 60px;
+    text-align: center;
+    }
+.main-title {
+    display: flex;
+    }
+}
+.main-nav a:hover {
+	background: #333;
+	color: #ccc;
+	}
+.main-nav a span {
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    width: 8px;
+    height: 8px;
+    background: #2a4d6e;
+}
+.main-nav {
+    margin-left: 0;
+}*/
+
+.error {
+    color: red;
+}
+
+label {
+    display: inline-block;
+    font-size: 20px;
+}
+
+.comment-text {
+    color: #00aaee;
+}
+
+input, optgroup, select {
+    width: 200px;
+    font: inherit;
+    color: inherit;
+}
+
+button, input, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+form {
+    display: block;
+    margin-top: 0;
+}
+
+input {
+    display: inline-block;
+}
+
+label {
+    display: inline-block;
+    color: #d3ffce;
+}
+
+p, h1 {
+    color: #d3ffce;
+}
+
+.post+.post {
+    margin-top: 15px;
+}
+
+.post-heading {
+    position: relative;
+    border-bottom: 3px solid #666;
+}
+
+.post-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.post-date {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    color: #999;
+}
+
+.post-content {
+    margin-top: 5px;
+}

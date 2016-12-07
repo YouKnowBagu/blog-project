@@ -1,19 +1,19 @@
-{% extends "blog.html" %}
-{% block content %}
+{% extends "blog.html" %} {% block content %}
 <h1>Login</h1>
 <form method="POST">
-        <table>
-    <tr>
-        <td>
-    <label for="username">Username</label></td>
-    <td><input type="text" name="username" value="{{username}}" required></td>
-    <tr><td><label for="password">Password</label></td>
-    <td><input type="password" name="password" value="" required></td></tr>
-    <div class="alert-danger">{{error}}</div>
-    <tr><td><input type="submit" class="btn btn-success" value="Login"></tr></td>
-</table>
+    <table>
+        <tr>
+            <td><label for="username">Username</label></td>
+            <td><input type="text" name="username" value="{{username}}" required></td>
+            <tr>
+                <td><label for="password">Password</label></td>
+                <td><input type="password" name="password" value="" required></td>
+            </tr>
+            <div class="alert-danger">{{error}}</div>
+            <tr>
+                <td><input type="submit" class="btn" value="Login"></tr>
+            </td>
+    </table>
 </form>
-<hr>
-Not registered yet?<br><br>
-<a class="btn btn-default" href="/signup">Signup</a>
-{% endblock %}
+<hr> Not registered yet?<br><br>
+<a class="btn" href="/signup">Signup</a> {% endblock %}

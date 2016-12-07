@@ -1,51 +1,91 @@
 <!DOCTYPE html>
+<html lang="eng">
 
-<html lang='en'>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://fonts.googleapis.com/css?family=Press+Start+2P|Trirong" rel="stylesheet">
-        <link ref="stylesheet" href="/css/bootstrap.css">
-        <link rel="stylesheet" href="/css/blog.css">
-        <link rel="stylesheet" href="/css/style.css">
-        <title>You Know Bagu</title>
-    </head>
-    <body>
-        <div class='blog-masthead'>
-            <div class="container">
-                <nav class='blog-nav'>
-                    <div class='brand-image'>
-                        <a class='blog-nav-image' href='/'><img src='images/avatar.png'></a>
-                    </div>
-                    <a class='blog-nav-item' href='/'>Home</a>
-                    {% if not user %}
+<head>
+    <meta content="width=device-width" name="viewport">
+    <link href="/css/main.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P|Trirong" rel="stylesheet">
+    <title>
+        You Know Bagu
+    </title>
+    </link>
+    </link>
+    </meta>
+</head>
 
-                    <a class='blog-nav-item' href='/login'>Login</a>
-                    <a class='blog-nav-item' href='/signup'>Register</a>
-                    {% elif user %}
-
-                    <a class='blog-nav-item' href='/blog/newpost'>New Post</a>
-                    <a class='blog-nav-item' href='/logout'>Logout</a>
-
-                    {% endif %}
-                </nav>
-            </div>
+<body>
+    <div class="main">
+        <div class="header-row">
+            <a class="main-title" href="/blog">
+     You Know Bagu
+    </a>
         </div>
+        <nav class="nav">
+            <ul>
+                {%- if path_check == '/blog' -%}
+                <li class="current">
+                    {% else %}
+                </li>
+                <li>
+                    {% endif %}
+                    <a href="/">
+       Home
+      </a>
+                </li>
+                {% if not user %} {% if path_check == '/login' %}
+                <li class="current">
+                    {% else %}
+                    <li>
+                        {% endif %}
+                        <a href="/login">
+        Login
+       </a>
+                    </li>
+                    {% if path_check == '/signup' %}
+                    <li class="current">
+                        {% else %}
+                        <li>
+                            {% endif %}
+                            <a href="/signup">
+         Register
+        </a>
+                        </li>
+                        {% elif user %} {% if path_check == '/blog/newpost' %}
+                        <li class="current">
+                            {% else %}
+                            <li>
+                                {% endif %}
+                                <a href="/blog/newpost">
+          New Post
+         </a>
+                            </li>
+                            <li>
+                                <a href="/logout">
+          Logout
+         </a>
+                            </li>
+                            {% endif %}
+                        </li>
+                    </li>
+                </li>
+            </ul>
+        </nav>
+        <div class="content">
+            {% for post in posts %}
+            <a href="/blog/{{post.key().id()}}">
+                <h2 class="post-title">
+      {{post.subject}}
+     </h2>
+            </a>
+            <small class="post-meta">
+     Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}
+    </small>
+            <p class="content">
+                {{post.content | safe}}
+            </p>
+            {% endfor %} {% block content %} {% endblock %}
+        </div>
+    </div>
+</body>
 
-                    {% for post in posts %}
-                    <div class="post-preview">
-                        <a href='/blog/{{post.key().id()}}' style="color:#666666;">
-                            <h2 class="post-title">{{post.subject}}</h2>
-                        </a>
-                        <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
-                        <p class="content">{{post.content | safe}}</p>
-                    <hr>
-                {% endfor %}
-                    {% block content %}
-                    {% endblock %}
-                    </div>
-                </div>
-            </div>
-
-    </body>
 </html>
