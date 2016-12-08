@@ -266,7 +266,7 @@ p, h1 {
     margin-left: 10px;
     margin-right: auto;
     font-size: .5em;
-    line-height: .85em;
+    line-height: 1em;
 }
 input.btn {
     margin-top: 5px;
