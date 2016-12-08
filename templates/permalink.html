@@ -7,11 +7,14 @@
 </div>
 {% if user %}
 <form method="POST">
+    <table>
     {% if post.user.name != user.name %}
-    <input type="submit" class="btn" name='like' value='&#128077; {{likes}} likes'>
-    <input type="submit" class="btn" name='unlike' value='&#128078; {{unlikes}} unlikes'> {% else %}
-    <input type="submit" class="btn" name='edit' value='&#9998; edit'>
-    <input type="submit" class="btn" name='delete' value="&#9003; delete"> {% endif %}
+    <tr>
+    <td><input type="submit" class="btn" name='like' value='&#128077; {{likes}} likes'></td>
+    <td><input type="submit" class="btn" name='unlike' value='&#128078; {{unlikes}} unlikes'></td></tr> {% else %}
+    <tr><td><input type="submit" class="btn" name='edit' value='&#9998; edit'></td>
+    <td><input type="submit" class="btn" name='delete' value="&#9003; delete"></td></tr> {% endif %}
+    <table>
 </form>
 {% endif %}
 <br>

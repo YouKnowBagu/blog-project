@@ -71,6 +71,7 @@ def render_post(response, post):
     response.out.write('<b>' + post.subject + '</b><br>')
     response.out.write(post.content)
 
+#Redirect, in case I want the base URL to do something else later.
 class Landing(BlogHandler):
   def get(self):
       self.redirect('/blog')
@@ -98,6 +99,7 @@ def user_key(name = 'default'):
 def post_key(name = 'default'):
     return db.Key.from_path('Post', name)
 
+#To highlight current active page
 def check_path(self):
     return self.request.path
 
@@ -159,6 +161,7 @@ class Like(db.Model):
             'user =', user_id)
         return liked.count()
 
+#####Same as above but for unlikes
 class Unlike(db.Model):
     post = db.ReferenceProperty(Post, required=True)
     user = db.ReferenceProperty(User, required=True)
@@ -198,6 +201,88 @@ class BlogFront(BlogHandler):
         posts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC")
         if posts:
             self.render("blog.html", posts=posts, path_check=path_check)
+
+#####: Functions using regular expressions to determine validity of input
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+def valid_username(username):
+    return username and USER_RE.match(username)
+
+PASS_RE = re.compile(r"^.{3,20}$")
+def valid_password(password):
+    return password and PASS_RE.match(password)
+
+EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
+def valid_email(email):
+    return not email or EMAIL_RE.match(email)
+
+class Signup(BlogHandler):
+    def get(self):
+        path_check = check_path(self)
+        self.render('signup-form.html', path_check=path_check)
+
+    def post(self):
+        have_error = False
+        self.username = self.request.get('username')
+        self.password = self.request.get('password')
+        self.verify = self.request.get('verify')
+        self.email = self.request.get('email')
+
+        params = dict(username = self.username,
+                      email = self.email)
+
+        if not valid_username(self.username):
+            params['error_username'] = "Invalid username."
+            have_error = True
+
+        if not valid_password(self.password):
+            params['error_password'] = "Invalid password."
+            have_error = True
+        elif self.password != self.verify:
+            params['error_verify'] = "Passwords do not match"
+            have_error = True
+
+        if not valid_email(self.email):
+            params['error_email'] = "Invalid email"
+            have_error = True
+
+        if have_error:
+            self.render('signup-form.html', path_check=path_check, **params)
+        else:
+            self.done()
+
+    def done(self, *a, **kw):
+        raise NotImplementedError
+
+class Register(Signup):
+    def done(self):
+        path_check = check_path(self)
+        user = User.by_name(self.username)
+        if user:
+            error = 'That user already exists.'
+            self.render('signup-form.html', error_username = error, path_check = path_check)
+        else:
+            user = User.register(self.username, self.password, self.email)
+            user.put()
+
+            self.login(user)
+            self.redirect('/blog/')
+
+class Login(BlogHandler):
+    def get(self):
+        path_check = check_path(self)
+        self.render('login-form.html', path_check=path_check)
+
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+        path_check = check_path(self)
+        user = User.login(username, password)
+        if user:
+            self.login(user)
+            self.redirect('/blog/')
+        else:
+            error = 'Invalid login'
+            self.render('login-form.html', error = error, path_check=path_check)
 
 class NewPost(BlogHandler):
     def get(self):
@@ -254,7 +339,8 @@ class PostPage(BlogHandler):
             comment_count=comment_count)
 
     def post(self, post_id):
-
+#####Getting the information we will need to update the database depending on the users
+#####input
         key = db.Key.from_path("Post", int(post_id), parent=post_key())
         post = db.get(key)
         user_id = User.by_name(self.user.name)
@@ -265,12 +351,18 @@ class PostPage(BlogHandler):
         liked = Like.check_like(post, user_id)
         unliked = Unlike.check_unlike(post, user_id)
 
+#####Due to a python check in the HTML, "Like" and "Unlike" will only appear on
+#####other user's posts.  Likewise, "Edit" and "Delete" will only appear on your own posts
+
+#####If the user is logged in and clicks the like button, first check to see if
+#####the user has liked the post before, if not, add one like, otherwise output error.
         if self.user:
             if self.request.get("like"):
                 if liked == 0:
                     like = Like(
                         post=post, user=user_id)
                     like.put()
+                    time.sleep(0.1)
                     self.redirect('/blog/%s' % str(post.key().id()))
                 else:
                     error = "You can only like a post one time."
@@ -282,6 +374,8 @@ class PostPage(BlogHandler):
                         error=error,
                         comment_count=comment_count,
                         comments=comments)
+#####If the user is logged in and clicks the unlike button, first check to see if
+#####the user has unliked the post before, if not, add one like, otherwise output error.
             elif self.request.get("unlike"):
                 if unliked == 0:
                     ul = Unlike(
@@ -299,6 +393,9 @@ class PostPage(BlogHandler):
                         error=error,
                         comment_count=comment_count,
                         comments=comments)
+#####If the user is logged in and clicks the comment button, first check that the user
+#####has filled ou the form.  If so, post the comment to the database and update the
+#####post's permalink.  If not, render error.
             elif self.request.get("add_comment"):
                 comment_text = self.request.get("comment_text")
                 if comment_text:
@@ -317,8 +414,12 @@ class PostPage(BlogHandler):
                         comment_count=comment_count,
                         comments=comments,
                         comment_error=comment_error)
+#####If the user is logged in and clicks the edit button, take them to editpost.html
+
             elif self.request.get("edit"):
                 self.redirect('/blog/editpost/%s' % str(post.key().id()))
+#####If the user is logged in and clicks the delete button, delete the post entry from
+#####the database.  NOTE:  This also deletes all comments associated with that post.
             elif self.request.get("delete"):
                 db.delete(key)
                 time.sleep(0.1)
@@ -326,103 +427,28 @@ class PostPage(BlogHandler):
         else:
             self.redirect("/login")
 
-#####: Functions using regular expressions to determine validity of input
-USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
-def valid_username(username):
-    return username and USER_RE.match(username)
-
-PASS_RE = re.compile(r"^.{3,20}$")
-def valid_password(password):
-    return password and PASS_RE.match(password)
-
-EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
-def valid_email(email):
-    return not email or EMAIL_RE.match(email)
-
-class Signup(BlogHandler):
-    def get(self):
-        path_check = check_path(self)
-        self.render('signup-form.html', path_check=path_check)
-
-    def post(self):
-        have_error = False
-        self.username = self.request.get('username')
-        self.password = self.request.get('password')
-        self.verify = self.request.get('verify')
-        self.email = self.request.get('email')
-
-        params = dict(username = self.username,
-                      email = self.email)
-
-        if not valid_username(self.username):
-            params['error_username'] = "Invalid username."
-            have_error = True
-
-        if not valid_password(self.password):
-            params['error_password'] = "Invalid password."
-            have_error = True
-        elif self.password != self.verify:
-            params['error_verify'] = "Passwords do not match"
-            have_error = True
-
-        if not valid_email(self.email):
-            params['error_email'] = "Invalid email"
-            have_error = True
-
-        if have_error:
-            self.render('signup-form.html', path_check=path_check, **params)
-        else:
-            self.done()
-
-    def done(self, *a, **kw):
-        raise NotImplementedError
 
 
-class Register(Signup):
-    def done(self):
-        path_check = check_path(self)
-        user = User.by_name(self.username)
-        if user:
-            error = 'That user already exists.'
-            self.render('signup-form.html', error_username = error, path_check = path_check)
-        else:
-            user = User.register(self.username, self.password, self.email)
-            user.put()
 
-            self.login(user)
-            self.redirect('/blog/')
-
-class Login(BlogHandler):
-    def get(self):
-        path_check = check_path(self)
-        self.render('login-form.html', path_check=path_check)
-
-    def post(self):
-        username = self.request.get('username')
-        password = self.request.get('password')
-        path_check = check_path(self)
-        user = User.login(username, password)
-        if user:
-            self.login(user)
-            self.redirect('/blog/')
-        else:
-            error = 'Invalid login'
-            self.render('login-form.html', error = error, path_check=path_check)
 
 class EditPost(BlogHandler):
     def get(self, post_id):
+#####Grab the posts id.
         key = db.Key.from_path("Post", int(post_id), parent=post_key())
         post = db.get(key)
-
+#####If the user is logged in, take them to the editpost.html page.  otherwise
+#####direct user to login page.
         if self.user:
             self.render("editpost.html", post=post)
         else:
             self.redirect("/login")
 
     def post(self, post_id):
+#####Grab the post ID to be sure the proper post is updated/edited.
         key = db.Key.from_path("Post", int(post_id), parent=post_key())
         post = db.get(key)
-
+#####If the user clicks update, first check that the form is completely filled out.
+#####If it is, update the database entry for the post.  Otherwise render error.
         if self.request.get("update"):
 
             subject = self.request.get("subject")
@@ -442,57 +468,61 @@ class EditPost(BlogHandler):
                     subject=subject,
                     content=content,
                     post_error=post_error)
+#####Return user to the permalink if they hit cancel
         elif self.request.get("cancel"):
             self.redirect('/blog/%s' % str(post.key().id()))
-
 class EditComment(BlogHandler):
-
     def get(self, post_id, comment_id):
-        post = Post.get_by_id(int(post_id), parent=post_key())
-        comment = Comment.get_by_id(int(comment_id))
+#####Find the comment ID to be updated.
+        key = db.Key.from_path("Comment", int(comment_id))
+        comment = db.get(key)
         if comment:
-            if comment.user.name == self.user.name:
-                self.render("editcomment.html", comment_text=comment.text)
-            else:
-                error = "You cannot edit other users' comments'"
-                self.render("editcomment.html", edit_error=error)
+                self.render("editcomment.html", comment=comment)
         else:
             error = "This comment no longer exists"
             self.render("editcomment.html", edit_error=error)
 
     def post(self, post_id, comment_id):
-        if self.request.get("update_comment"):
-            comment = Comment.get_by_id(int(comment_id))
-            if comment.user.name == self.user.name:
-                comment.text = self.request.get('comment_text')
+        pkey = db.Key.from_path("Post", int(post_id), parent=post_key())
+        post = db.get(pkey)
+        key = db.Key.from_path("Comment", int(comment_id))
+        comment = db.get(key)
+
+        if self.request.get("update"):
+            content = self.request.get("comment")
+
+            if content:
+                comment.text = content
                 comment.put()
                 time.sleep(0.1)
-                self.redirect('/blog/%s' % str(post_id))
+                self.redirect('/blog/%s' % str(post.key().id()))
             else:
-                error = "You cannot edit other users' comments'"
+                edit_error="All fields required."
                 self.render(
-                    "editcomment.html",
-                    comment_text=comment.text,
-                    edit_error=error)
-        elif self.request.get("cancel"):
-            self.redirect('/blog/%s' % str(post_id))
+                'editcomment.html',
+                comment=comment,
+                edit_error = edit_error)
 
+        elif self.request.get("cancel"):
+            self.redirect('/blog/%s' % str(post.key().id()))
+
+#####Delete user cookies.
 class Logout(BlogHandler):
     def get(self):
         self.logout()
         self.redirect('/blog')
 
-class Welcome(BlogHandler):
-    def get(self):
-        if self.user:
-            self.render('blog.html', username = self.user.name, path_check=path_check)
-        else:
-            self.redirect('/signup')
+#####From the homework, not used in final product.
+# class Welcome(BlogHandler):
+#     def get(self):
+#         if self.user:
+#             self.render('blog.html', username = self.user.name, path_check=path_check)
+#         else:
+#             self.redirect('/signup')
 
 app = webapp2.WSGIApplication([('/', Landing),
                             ('/blog/?', BlogFront),
                             ('/blog/newpost', NewPost),
-                            ('/blog/welcome', Welcome),
                             ('/login', Login),
                             ('/blog/([0-9]+)', PostPage),
                             ('/blog/editpost/([0-9]+)', EditPost),
