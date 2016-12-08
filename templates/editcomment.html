@@ -3,11 +3,18 @@
 <form method="POST">
     <table>
         <tr>
-    <td><label for="content">Comment</label></td>
-    <td><textarea name="comment">{{comment.text}}</textarea></td></tr>
-    <tr><td><div class="error">{{edit_error}}</div></td></tr>
-    <tr><td><input type="submit" class="btn" name="update" value="Update"></td>
-    <td><input type="submit" class="btn" name="cancel" value="Cancel"></td></tr>
-</table>
+            <td><label for="content">Comment</label></td>
+            <td><textarea name="comment">{{comment.text}}</textarea></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="error">{{edit_error}}</div>
+            </td>
+        </tr>
+        <tr>
+            <td><input type="submit" class="btn" name="update" value="Update"></td>
+            <td><input type="submit" class="btn" name="cancel" value="Cancel"></td>
+        </tr>
+    </table>
 </form>
 {% endblock %}

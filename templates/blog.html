@@ -22,55 +22,55 @@
         </div>
         <nav class="nav">
             <div tabindex="0" class="onclick-menu">
-            <ul class='onclick-menu-content'>
-                {%- if path_check == '/blog' -%}
-                <li class="current">
-                    {% else %}
-                </li>
-                <li>
-                    {% endif %}
-                    <a class='button' href="/">
-       Home
-      </a>
-                </li>
-                {% if not user %} {% if path_check == '/login' %}
-                <li class="current">
-                    {% else %}
+                <ul class='onclick-menu-content'>
+                    {%- if path_check == '/blog' -%}
+                    <li class="current">
+                        {% else %}
+                    </li>
                     <li>
                         {% endif %}
-                        <a class='button' href="/login">
-        Login
-       </a>
+                        <a class='button' href="/">
+       Home
+      </a>
                     </li>
-                    {% if path_check == '/signup' %}
+                    {% if not user %} {% if path_check == '/login' %}
                     <li class="current">
                         {% else %}
                         <li>
                             {% endif %}
-                            <a class='button' href="/signup">
-         Register
-        </a>
+                            <a class='button' href="/login">
+        Login
+       </a>
                         </li>
-                        {% elif user %} {% if path_check == '/blog/newpost' %}
+                        {% if path_check == '/signup' %}
                         <li class="current">
                             {% else %}
                             <li>
                                 {% endif %}
-                                <a class='button' href="/blog/newpost">
+                                <a class='button' href="/signup">
+         Register
+        </a>
+                            </li>
+                            {% elif user %} {% if path_check == '/blog/newpost' %}
+                            <li class="current">
+                                {% else %}
+                                <li>
+                                    {% endif %}
+                                    <a class='button' href="/blog/newpost">
           New Post
          </a>
-                            </li>
-                            <li>
-                                <a class='button' href="/logout">
+                                </li>
+                                <li>
+                                    <a class='button' href="/logout">
           Logout
          </a>
+                                </li>
+                                {% endif %}
                             </li>
-                            {% endif %}
                         </li>
                     </li>
-                </li>
-            </ul>
-        </div>
+                </ul>
+            </div>
         </nav>
         <div class="content">
             {% for post in posts %}
@@ -85,8 +85,7 @@
             <p class="post-content">
                 {{post.content | safe}}
             </p>
-            <hr>
-            {% endfor %} {% block content %} {% endblock %}
+            <hr> {% endfor %} {% block content %} {% endblock %}
         </div>
     </div>
 </body>
