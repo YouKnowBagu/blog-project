@@ -32,6 +32,8 @@ def check_secure_val(secure_val):
         return val
 
 # REVIEW: Self was a difficult concept for me to grasp, but this answer at stack overflow epxlains it well: http://stackoverflow.com/a/2709832
+
+#Class and functions to make commonly repeated tasks easier to execute
 class BlogHandler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
@@ -436,6 +438,7 @@ class EditPost(BlogHandler):
                 post_error = "All fields required."
                 self.render(
                     "editpost.html",
+                    post=post,
                     subject=subject,
                     content=content,
                     post_error=post_error)

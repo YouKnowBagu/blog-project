@@ -1,7 +1,7 @@
 {% extends "blog.html" %} {% block content %}
 <div>
-    <h2>{{post.subject}}</h2>
-    <small>Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
+    <h1>{{post.subject}}</h1>
+    <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
     <p class="content">{{post.content | safe}}</p>
 
 </div>
@@ -14,30 +14,29 @@
     <input type="submit" class="btn" name='delete' value="&#9003; delete"> {% endif %}
 </form>
 {% endif %}
-
+<br>
+<hr>
 <span class="error">{{error}}</span>
-<hr> {% if comments_count == 1 %}
-<label>{{comments_count}} comment</label> {% else %}
-<label>{{comments_count}} comments</label> {% endif %} {% for comment in comments %}
+{% if comment_count == 1 %}
+<div class='comment-head'>
+<small class='comment-count'>{{comment_count}} comment</small> {% else %}
+<small class='comment-count'>{{comment_count}} comments</small> {% endif %} {% for comment in comments %}
+</div>
 <div class='content'>
-    <small>Posted by {{comment.user.name}} on {{comment.created.strftime("%b %d, %Y")}}</small><br>
-    <strong class='comment-text'>{{comment.text}}</strong><br>
-    <br> {% if comment.user.name == user.name %}
+    <br>
+    <small class=post-meta>Posted by {{comment.user.name}} on {{comment.created.strftime("%b %d, %Y")}}</small>
+    <p class='post-content'>{{comment.text}}</p>
+ {% if comment.user.name == user.name %}
     <a class='btn btn-block' href="/blog/{{post.key().id()}}/editcomment/{{comment.key().id()}}">edit</a>
     <a class='btn btn-block' href="/blog/{{post.key().id()}}/deletecomment/{{comment.key().id()}}">delete</a> {% endif %}
-
-
-
 </div>
 {% endfor %}
-<br><br> {% if user %}
+<br> {% if user %}
 <form method="POST">
-    <label>
-            Add Comment<br>
-            <textarea class="form-control" name="comment_text" style="width:400px;height:100px;">{{comment_text | safe}}</textarea>
-        </label>
-    <br>
-    <div class="alert-danger">{{comment_error}}</div>
-    <input type="submit" class="btn btn-success" name="add_comment" value="Post">
+    <table>
+        <tr><td><label for='add-comment'>Add Comment</label></td></tr>
+            <tr><td><textarea class="comment-content" name="comment_text">{{comment_text | safe}}</textarea></td></tr>
+    <tr><td><div class="error">{{comment_error}}</div></td></tr>
+    <tr><td><input type="submit" class="btn" name="add_comment" value="Post"></td></tr>
 </form>
 {% endif %} {% endblock %}

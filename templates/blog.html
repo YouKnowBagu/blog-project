@@ -14,21 +14,22 @@
 </head>
 
 <body>
-    <div class="main">
+    <div class='wrapper'>
         <div class="header-row">
             <a class="main-title" href="/blog">
      You Know Bagu
     </a>
         </div>
         <nav class="nav">
-            <ul>
+            <div tabindex="0" class="onclick-menu">
+            <ul class='onclick-menu-content'>
                 {%- if path_check == '/blog' -%}
                 <li class="current">
                     {% else %}
                 </li>
                 <li>
                     {% endif %}
-                    <a href="/">
+                    <a class='button' href="/">
        Home
       </a>
                 </li>
@@ -37,7 +38,7 @@
                     {% else %}
                     <li>
                         {% endif %}
-                        <a href="/login">
+                        <a class='button' href="/login">
         Login
        </a>
                     </li>
@@ -46,7 +47,7 @@
                         {% else %}
                         <li>
                             {% endif %}
-                            <a href="/signup">
+                            <a class='button' href="/signup">
          Register
         </a>
                         </li>
@@ -55,12 +56,12 @@
                             {% else %}
                             <li>
                                 {% endif %}
-                                <a href="/blog/newpost">
+                                <a class='button' href="/blog/newpost">
           New Post
          </a>
                             </li>
                             <li>
-                                <a href="/logout">
+                                <a class='button' href="/logout">
           Logout
          </a>
                             </li>
@@ -69,6 +70,7 @@
                     </li>
                 </li>
             </ul>
+        </div>
         </nav>
         <div class="content">
             {% for post in posts %}
@@ -80,9 +82,10 @@
             <small class="post-meta">
      Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}
     </small>
-            <p class="content">
+            <p class="post-content">
                 {{post.content | safe}}
             </p>
+            <hr>
             {% endfor %} {% block content %} {% endblock %}
         </div>
     </div>
