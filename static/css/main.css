@@ -275,7 +275,7 @@ input.btn {
 }
 p.content {
     margin-top: 10px;
-    line-height: normal;
+    line-height: 1em;
     font-size: .6em;
     margin-left:0;
     margin-bottom:0;
