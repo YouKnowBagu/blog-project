@@ -5,9 +5,45 @@ a {
 html {
     display: block;
     width: 100%;
-    height:100%;
+    height: 100%;
+}
+form {
+    width: 95%;
+    margin: 0;
 }
 
+label, input {
+    /* in order to define widths */
+    display: inline-block;
+}
+
+label {
+    width: 25%;
+    color: #d3ffce;
+    font-size: 20px;
+    /* positions the label text beside the input */
+    text-align: right;
+}
+input {
+    font-size: 20px;
+}
+label + input {
+    width: 30%;
+    /* large margin-right to force the next element to the new-line
+       and margin-left to create a gutter between the label and input */
+    margin: 0 1% 0 1%;
+    /*line-height: 2em;*/
+}
+label + input + label {
+    width: 25%;
+    margin: 0 1% 0 1%;
+}
+
+/* only the submit button is matched by this selector,
+   but to be sure you could use an id or class for that button */
+input + input {
+    float: right;
+}
 body {
     padding: 0;
     background: #202020;
@@ -16,17 +52,21 @@ body {
     font: 40px 'Trirong', sans-serif;
     line-height: 1.42em;
 }
+small {
+    margin: 5px;
+}
 .wrapper {
     height: 100%;
     width: 100%;
 }
+
 .btn:hover {
     background-color: #a15500;
 }
 
 .btn {
     background-color: buttonface;
-    display: inline-block;
+    /*display: inline-block;*/
     padding: 6px 12px;
     margin-bottom: 0;
     font-size: .4em;
@@ -58,15 +98,13 @@ p {
     text-decoration: none;
 }
 
-h2 {
+.post-title {
     color: #19BDFF;
-    text-decoration: none;
-    margin: 0;
 }
 
-label {
-    max-width: 200px;
-    margin-bottom: 5px;
+h2 {
+    text-decoration: none;
+    margin: 0;
 }
 
 .header-row {
@@ -83,6 +121,7 @@ label {
     margin-right: auto;
     text-align: left;
 }
+
 .nav {
     position: relative;
     font-family: "Press Start 2P", cursive;
@@ -122,6 +161,16 @@ label {
     background: #a15500;
     color: #fff;
 }
+hr {
+    width: 75%;
+    float: left;
+    margin: .3em;
+}
+hr.mini {
+    width: 40%;
+    float: left;
+    margin: .3em;
+}
 .post-meta {
     display: block;
     line-height: .35em;
@@ -129,13 +178,15 @@ label {
     font-size: .4em;
     color: #ee7e00;
 }
+
 .comment-count {
     display: block;
     line-height: .35em;
     margin-top: 0;
     font-size: .5em;
-    color: #ee7e00;
+    color: #19BDFF;
 }
+
 .main-title {
     color: #19BDFF;
     font-family: "Press Start 2P";
@@ -147,16 +198,18 @@ label {
     top: auto;
     vertical-align: middle;
 }
+
 @media only screen and (min-width: 601px) {
     p.content {
-    font-size: 1em;
-}
+        font-size: 1em;
+    }
     .post-title {
         font-size: .8em;
     }
 }
+
 @media only screen and (max-width: 600px) {
-/* Menu code base from http://koen.kivits.com/articles/pure-css-menu/
+    /* Menu code base from http://koen.kivits.com/articles/pure-css-menu/
 with alterations to work on this page. */
     .onclick-menu {
         position: relative;
@@ -191,14 +244,12 @@ with alterations to work on this page. */
     .onclick-menu:focus .onclick-menu-content {
         opacity: 1;
         visibility: visible;
-
         pointer-events: auto;
     }
     .onclick-menu-content {
         padding: 0;
         position: absolute;
         z-index: 1;
-
         opacity: 0;
         visibility: hidden;
         transition: visibility 0.5s;
@@ -207,76 +258,66 @@ with alterations to work on this page. */
         font-size: 20px;
     }
 }
+
 .error {
     color: red;
-    font-size: .6em;
-    display: inline;
     width: auto;
 }
+
 .comment-head {
     display: inline;
 }
+
 .comment-text {
     color: #00aaee;
 }
 
-
 form {
     display: block;
     margin-top: 0;
+    line-height: 1em;
 }
+
 textarea {
     float: left;
     width: 400px;
     height: 100px;
     font-size: .4em;
 }
-input {
-    font-size: .4em;
-    line-height: .2em;
-    float: left;
-}
-td {
-    text-align: left;
-}
-tr {
-    margin-bottom: 5px;
-    line-height: .45em;
-}
-label {
-    font-size: .5em;
-    color: #d3ffce;
-    text-align: right;
-    width: auto;
-}
+
+
 .comment-content {
     width: 400px;
     height: 100px;
 }
+
 p, h1 {
+    margin-bottom: 2px;
     color: #d3ffce;
     font-size: .9em;
-    margin-bottom: 0;
 }
+
 .post-title {
     font-size: .8em;
     font-weight: bold;
 }
-.post-content{
+
+.post-content {
     margin-left: 10px;
     margin-right: auto;
     font-size: .5em;
-    line-height: 1em;
+    line-height: .75em;
 }
+
 input.btn {
-    margin-top: 5px;
-    float: left;
     width: auto;
+    margin-right: 34%;
 }
+
 p.content {
     margin-top: 10px;
-    line-height: 1em;
+    line-height: normal;
     font-size: .6em;
-    margin-left:0;
-    margin-bottom:0;
+    margin-left: 0;
+    margin-bottom: 0;
 }

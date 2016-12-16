@@ -8,84 +8,43 @@
     <title>
         You Know Bagu
     </title>
-    </link>
-    </link>
     </meta>
 </head>
 
 <body>
     <div class='wrapper'>
         <div class="header-row">
-            <a class="main-title" href="/blog">
-     You Know Bagu
-    </a>
+            <a class="main-title" href="/blog">You Know Bagu</a>
         </div>
         <nav class="nav">
             <div tabindex="0" class="onclick-menu">
                 <ul class='onclick-menu-content'>
-                    {%- if path_check == '/blog' -%}
-                    <li class="current">
-                        {% else %}
+                    <a class='button' href="/">Home</a> {% if not user %}
+                    <li>
+                        <a class='button' href="/login">Login</a>
                     </li>
                     <li>
-                        {% endif %}
-                        <a class='button' href="/">
-       Home
-      </a>
+                        <a class='button' href="/signup">Register</a>
                     </li>
-                    {% if not user %} {% if path_check == '/login' %}
-                    <li class="current">
-                        {% else %}
-                        <li>
-                            {% endif %}
-                            <a class='button' href="/login">
-        Login
-       </a>
-                        </li>
-                        {% if path_check == '/signup' %}
-                        <li class="current">
-                            {% else %}
-                            <li>
-                                {% endif %}
-                                <a class='button' href="/signup">
-         Register
-        </a>
-                            </li>
-                            {% elif user %} {% if path_check == '/blog/newpost' %}
-                            <li class="current">
-                                {% else %}
-                                <li>
-                                    {% endif %}
-                                    <a class='button' href="/blog/newpost">
-          New Post
-         </a>
-                                </li>
-                                <li>
-                                    <a class='button' href="/logout">
-          Logout
-         </a>
-                                </li>
-                                {% endif %}
-                            </li>
-                        </li>
+                    {% elif user %}
+                    <li>
+                        <a class='button' href="/blog/newpost">New Post</a>
                     </li>
+                    <li>
+                        <a class='button' href="/logout">Logout</a>
+                    </li>
+                    {% endif %}
+
                 </ul>
             </div>
         </nav>
         <div class="content">
             {% for post in posts %}
             <a href="/blog/{{post.key().id()}}">
-                <h2 class="post-title">
-      {{post.subject}}
-     </h2>
-            </a>
-            <small class="post-meta">
-     Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}
-    </small>
-            <p class="post-content">
-                {{post.content | safe}}
-            </p>
-            <hr> {% endfor %} {% block content %} {% endblock %}
+                    <h2 class='post-title'>{{post.subject}}</h2>
+                    <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
+                    <p class="content">{{post.content | safe}}</p>
+            <hr><br>{% endfor %} {% block content %} {% endblock %}
         </div>
     </div>
 </body>

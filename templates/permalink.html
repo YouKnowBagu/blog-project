@@ -1,57 +1,57 @@
 {% extends "blog.html" %} {% block content %}
 <div>
-    <h1>{{post.subject}}</h1>
+    <h1 class='post-title'>{{post.subject}}</h1>
     <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
     <p class="content">{{post.content | safe}}</p>
 
 </div>
 {% if user %}
-<form method="POST">
-    <table>
+<form method="post">
+
         {% if post.user.name != user.name %}
-        <tr>
-            <td><input type="submit" class="btn" name='like' value='&#128077; {{likes}} likes'></td>
-            <td><input type="submit" class="btn" name='unlike' value='&#128078; {{unlikes}} unlikes'></td>
-        </tr> {% else %}
-        <tr>
-            <td><input type="submit" class="btn" name='edit' value='&#9998; edit'></td>
-            <td><input type="submit" class="btn" name='delete' value="&#9003; delete"></td>
-        </tr> {% endif %}
-        <table>
-</form>
-{% endif %}
+
+            <input type="submit" class="btn" name='like' value='&#128077; {{likes}} Likes'>
+            <input type="submit" class="btn" name='unlike' value='&#128078; {{unlikes}} Unlikes'>
+         {% else %}
+
+            <input type='submit' class="btn" name='edit' value='&#9998; Edit'>
+            <input type="submit" class="btn" name='delete' value="&#9003; Delete">
+         {% endif %}
+ </form>
+
 <br>
 <hr>
-<span class="error">{{error}}</span> {% if comment_count == 1 %}
+<br>
+
+{% endif %}
+
+
+<label class="error">{{error}}</label>
+{% if comment_count == 1 %}
 <div class='comment-head'>
-    <small class='comment-count'>{{comment_count}} comment</small> {% else %}
-    <small class='comment-count'>{{comment_count}} comments</small> {% endif %} {% for comment in comments %}
+<form method="POST">
+    <h4 class='comment-count'>{{comment_count}} comment</h4> {% else %}
+    <h4 class='comment-count'>{{comment_count}} comments</h4> {% endif %}
 </div>
+{% for comment in comments %}
 <div class='content'>
-    <br>
+    <form method='post'>
     <small class=post-meta>Posted by {{comment.user.name}} on {{comment.created.strftime("%b %d, %Y")}}</small>
     <p class='post-content'>{{comment.text}}</p>
     {% if comment.user.name == user.name %}
-    <a class='btn btn-block' href="/blog/{{post.key().id()}}/editcomment/{{comment.key().id()}}">edit</a>
+    <a href='/blog/{{post.key().id()}}/editcomment/{{comment.key().id()}}'>edit</a>
     <a class='btn btn-block' href="/blog/{{post.key().id()}}/deletecomment/{{comment.key().id()}}">delete</a> {% endif %}
-</div>
+    <br></form>
+    <hr class='mini'>
+    <br>
 {% endfor %}
-<br> {% if user %}
-<form method="POST">
-    <table>
-        <tr>
-            <td><label for='add-comment'>Add Comment</label></td>
-        </tr>
-        <tr>
-            <td><textarea class="comment-content" name="comment_text">{{comment_text | safe}}</textarea></td>
-        </tr>
-        <tr>
-            <td>
-                <div class="error">{{comment_error}}</div>
-            </td>
-        </tr>
-        <tr>
-            <td><input type="submit" class="btn" name="add_comment" value="Post"></td>
-        </tr>
+ {% if user %}
+<form method='post'>
+            <label for='add_comment'>Add Comment</label>
+            <textarea class="comment-content" name="comment_text" rows='10' columns='50'>{{comment_text | safe}}</textarea>
+<label class="error">{{comment_error}}</label><br><br>
+<input type="submit" class="btn" name="add_comment" value="Post">
 </form>
-{% endif %} {% endblock %}
+</div>
+{% endif %}
+{% endblock %}

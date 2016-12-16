@@ -4,6 +4,7 @@ api_version: 1
 threadsafe: true
 
 handlers:
+
 - url: /css
   static_dir: static/css
 
@@ -11,7 +12,7 @@ handlers:
   static_dir: static/images
 
 - url: /.*
-  script: blog.app
+  script: main.app
 
 libraries:
 - name: jinja2
