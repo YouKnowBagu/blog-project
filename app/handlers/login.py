@@ -7,7 +7,7 @@ class Login(basehandler.BlogHandler):
         self.render('login-form.html')
 
     def post(self):
-        if self.request.get('Register'):
+        if self.request.get('Signup'):
             self.redirect('/signup')
         else:
             username = self.request.get('username')

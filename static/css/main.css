@@ -4,72 +4,88 @@ a {
 
 html {
     display: block;
-    width: 100%;
-    height: 100%;
-}
-form {
-    width: 95%;
-    margin: 0;
+    /*width: 100%;*/
+    /*height: 100%;*/
 }
 
 label, input {
     /* in order to define widths */
     display: inline-block;
-}
-
-label {
-    width: 25%;
-    color: #d3ffce;
-    font-size: 20px;
-    /* positions the label text beside the input */
-    text-align: right;
+    width: 13vw;
+    font-size: 16px;
 }
 input {
-    font-size: 20px;
+    width: 20vw;
 }
-label + input {
-    width: 30%;
-    /* large margin-right to force the next element to the new-line
-       and margin-left to create a gutter between the label and input */
-    margin: 0 1% 0 1%;
-    /*line-height: 2em;*/
-}
-label + input + label {
-    width: 25%;
-    margin: 0 1% 0 1%;
+label {
+    color: #BBBBBB;
+    font-size: 18px;
+    text-align: left;
+    vertical-align: top;
 }
 
-/* only the submit button is matched by this selector,
-   but to be sure you could use an id or class for that button */
-input + input {
-    float: right;
+
+br {
+    height: 4px;
 }
+
+label + input + label {
+    margin: 0 55% 0 0;
+}
+
 body {
     padding: 0;
     background: #202020;
     color: #5D6063;
     max-width: 100%;
-    font: 40px 'Trirong', sans-serif;
-    line-height: 1.42em;
+    margin: 0 0 0 0;
+    font: 24px "Courier New", Courier, monospace;
 }
 small {
     margin: 5px;
 }
 .wrapper {
-    height: 100%;
-    width: 100%;
+    /*height: 100%;*/
+    /*width: 100%;*/
 }
 
 .btn:hover {
     background-color: #a15500;
 }
-
+a.start {
+    margin-left: 20px;
+}
+a.atag-btn {
+    background-color: buttonface;
+    /*display: inline-block;*/
+    padding: 6px 12px;
+    margin-top: 10px;
+    color: #000000;
+    font-size: 16px;
+    font-family: Lucida Grande;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px
+}
+a:hover {
+    background-color: #a15500;
+}
 .btn {
     background-color: buttonface;
     /*display: inline-block;*/
     padding: 6px 12px;
-    margin-bottom: 0;
-    font-size: .4em;
     color: #000000;
     font-weight: 400;
     line-height: 1.42857143;
@@ -93,32 +109,34 @@ small {
     max-width: 50px;
 }
 
-p {
-    color: #82868A;
-    text-decoration: none;
+p.redirect {
+    color: #19BDFF;
 }
-
+p {
+    color: #BBBBBB;
+    text-decoration: none;
+    font-size: 24px;
+    margin-bottom: 2px;
+}
 .post-title {
     color: #19BDFF;
+    margin: 10px 0 10px 0;
 }
 
 h2 {
     text-decoration: none;
-    margin: 0;
 }
 
 .header-row {
     display: block;
-    position: relative;
-    height: auto;
     width: 100%;
     background: #2a4d6e;
+    height:6vh;
 }
 
 .content {
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 40px;
+    margin-right: 40px;
     text-align: left;
 }
 
@@ -126,10 +144,9 @@ h2 {
     position: relative;
     font-family: "Press Start 2P", cursive;
     border-bottom: 1px solid black;
-    font-size: .5em;
+    font-size: 20px;
     border-color: #11385d;
     background-color: #04294C;
-    vertical-align: text-top;
 }
 
 .nav ul {
@@ -143,14 +160,13 @@ h2 {
     padding: 0;
     list-style: none;
     display: inline-block;
-    margin: 5px 5px 5px 0;
+    margin: 15px 5px 5px 0;
 }
 
 .nav a {
     padding: 3px 12px;
     text-decoration: none;
     color: #999;
-    line-height: 1.42em;
 }
 
 .nav a:hover {
@@ -161,52 +177,40 @@ h2 {
     background: #a15500;
     color: #fff;
 }
-hr {
-    width: 75%;
-    float: left;
-    margin: .3em;
-}
 hr.mini {
     width: 40%;
     float: left;
-    margin: .3em;
+    margin: 10px;
 }
 .post-meta {
     display: block;
-    line-height: .35em;
     margin-top: 0;
-    font-size: .4em;
+    font-size: 18px;
+    margin-left: 20px;
+    margin-bottom: 0;
     color: #ee7e00;
+    font-weight: bold;
 }
 
 .comment-count {
     display: block;
-    line-height: .35em;
     margin-top: 0;
-    font-size: .5em;
+    margin-bottom: 10px;
+    font-size: 24px;
     color: #19BDFF;
+    font-weight: lighter;
 }
 
-.main-title {
+a.main-title {
     color: #19BDFF;
     font-family: "Press Start 2P";
-    font-size: .75em;
-    font-weight: bold;
+    font-size: 36px;
     text-align: left;
     text-decoration: none;
     position: relative;
-    top: auto;
-    vertical-align: middle;
-}
-
-@media only screen and (min-width: 601px) {
-    p.content {
-        font-size: 1em;
+    display: inline-block;
+    margin-top: 12px;
     }
-    .post-title {
-        font-size: .8em;
-    }
-}
 
 @media only screen and (max-width: 600px) {
     /* Menu code base from http://koen.kivits.com/articles/pure-css-menu/
@@ -262,10 +266,12 @@ with alterations to work on this page. */
 .error {
     color: red;
     width: auto;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 .comment-head {
-    display: inline;
+    display: block;
 }
 
 .comment-text {
@@ -274,50 +280,53 @@ with alterations to work on this page. */
 
 form {
     display: block;
-    margin-top: 0;
-    line-height: 1em;
+    margin: 0 20px 0 20px;
 }
 
 textarea {
-    float: left;
     width: 400px;
     height: 100px;
-    font-size: .4em;
+    font-size: 18px;
 }
 
 
-.comment-content {
+.new-comment-content {
     width: 400px;
     height: 100px;
 }
 
-p, h1 {
+h1 {
     margin-bottom: 2px;
-    color: #d3ffce;
-    font-size: .9em;
+    margin-left: 15px;
+    margin-top: 20px;
+    color: #19BDFF;
 }
 
 .post-title {
-    font-size: .8em;
-    font-weight: bold;
+    font-size: 32px;
 }
 
 .post-content {
-    margin-left: 10px;
+    margin-left: 20px;
+    margin top: 15px;
     margin-right: auto;
-    font-size: .5em;
-    line-height: .75em;
+    font-size: 24px;
 }
-
+.comment-content {
+    margin-left: 20px;
+    margin-right: auto;
+    word-wrap: break-word;
+    font-size: 22px;
+    margin-bottom: 10px;
+    margin-top: 15px;
+}
 input.btn {
     width: auto;
-    margin-right: 34%;
 }
 
 p.content {
-    margin-top: 10px;
-    line-height: normal;
-    font-size: .6em;
-    margin-left: 0;
+    margin-top: 15px;
+    font-size: 28px;
+    margin-left: 25px;
     margin-bottom: 0;
 }

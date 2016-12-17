@@ -44,7 +44,7 @@
                     <h2 class='post-title'>{{post.subject}}</h2>
                     <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
                     <p class="content">{{post.content | safe}}</p>
-            <hr><br>{% endfor %} {% block content %} {% endblock %}
+            <br>{% endfor %} {% block content %} {% endblock %}
         </div>
     </div>
 </body>

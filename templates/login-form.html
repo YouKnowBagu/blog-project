@@ -4,17 +4,19 @@
 
 
 <label for="username">Username:</label>
-<input class='text' type="text" name="username" value="{{username}}"><br>
+<input class='text' type="text" name="username" value="{{username}}"><label class="error">{{error}}</label>
+
+<br>
 
 <label for="password">Password:</label>
 <input class='text'type="password" name="password">
 <br>
 <input type="submit" class="btn" value="Login">
-<label class="error">{{error}}</label><br>
-<hr>
 <br>
-<p> Not registered yet?</p>
-<input type="submit" class="btn" name='Register' value='Register'>
+<hr>
+
+<p class='redirect'> Not registered yet?</p>
+<input type="submit" class="btn" name='Signup' value='Signup'>
 </form>
 
 {% endblock %}

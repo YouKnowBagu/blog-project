@@ -1,32 +1,26 @@
 {% extends "blog.html" %} {% block content %}
 <h1>Signup</h1>
 <form method="POST">
-
-
-	<label for="username">Username</label>
-	<input type="text" name="username" value="{{username}}">
-	<label class='error'>{{error_username}}</label>
+	<label class='signup'for="username">Username</label>
+	<input class='text'type="text" name='username' value="{{username}}">
+	<label class='error signup'>{{error_username}}</label>
+	<br>
+	<label class='signup' for="password">Password</label>
+	<input class='text' type="password" name="password" value=''>
+	<label class='error signup'>{{error_password}}</label>
 <br>
 
-	<label for="password">Password</label>
-	<input type="password" name="password" value=''>
-	<label class='error'>{{error_password}}</label>
-<br>
+	<label class='signup' for="verify">Verify Password</label>
+	<input class='text' type="password" name="verify" value=''>
+	<label class='error signup'>{{error_verify}}</label>
+	<label class='signup' for="email">Email (Optional)</label>
+	<input class='text' type="text" name="email" id="email" value=''>
+	<label class='error signup'>{{error_email}}</label><br>
+	<input type="submit" class="btn" value='Signup'><br>
+<hr class='mini'>
 
-	<label for="verify">Verify Password</label>
-	<input type="password" name="verify" value=''>
-	<label class='error'>{{error_verify}}</label>
-<br>
 
-	<label for="email">Email (Optional)</label>
-	<input type="text" name="email" id="email" value=''>
-	<label class='error'>{{error_email}}</label>
-<br>
-	<input type="submit" class="btn" value='Signup'>
-<hr>
-<br>
-<br>
-<p class='inline'> Already registered?</p>
+<p class='inline redirect'> Already registered?</p>
 <input type='submit' class="btn" name='Login' value='Login'>
 </form>
 

@@ -33,8 +33,6 @@ class Signup(basehandler.BlogHandler):
             params = dict(username = self.username,
                           email = self.email)
 
-
-
             if not valid_username(self.username):
                 params['error_username'] = "Invalid username."
                 have_error = True
