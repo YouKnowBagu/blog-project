@@ -54,7 +54,7 @@ class Signup(basehandler.BlogHandler):
         user = dbuser.User.by_name(self.username)
         if user:
             error = 'That user already exists.'
-            self.render('signup-form.html', **params)
+            self.render('signup-form.html', error=error, **params)
         else:
             user = dbuser.User.register(self.username, self.password, self.email)
             user.put()
