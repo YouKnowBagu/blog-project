@@ -14,9 +14,11 @@ label, input {
     width: 13vw;
     font-size: 16px;
 }
+
 input {
     width: 20vw;
 }
+
 label {
     color: #BBBBBB;
     font-size: 18px;
@@ -24,12 +26,11 @@ label {
     vertical-align: top;
 }
 
-
 br {
     height: 4px;
 }
 
-label + input + label {
+label+input+label {
     margin: 0 55% 0 0;
 }
 
@@ -41,9 +42,11 @@ body {
     margin: 0 0 0 0;
     font: 24px "Courier New", Courier, monospace;
 }
+
 small {
     margin: 5px;
 }
+
 .wrapper {
     /*height: 100%;*/
     /*width: 100%;*/
@@ -52,9 +55,11 @@ small {
 .btn:hover {
     background-color: #a15500;
 }
+
 a.start {
     margin-left: 20px;
 }
+
 a.atag-btn {
     background-color: buttonface;
     /*display: inline-block;*/
@@ -79,9 +84,11 @@ a.atag-btn {
     border: 1px solid transparent;
     border-radius: 4px
 }
+
 a:hover {
     background-color: #a15500;
 }
+
 .btn {
     background-color: buttonface;
     /*display: inline-block;*/
@@ -112,12 +119,14 @@ a:hover {
 p.redirect {
     color: #19BDFF;
 }
+
 p {
     color: #BBBBBB;
     text-decoration: none;
     font-size: 24px;
     margin-bottom: 2px;
 }
+
 .post-title {
     color: #19BDFF;
     margin: 10px 0 10px 0;
@@ -131,7 +140,7 @@ h2 {
     display: block;
     width: 100%;
     background: #2a4d6e;
-    height:6vh;
+    height: 6vh;
 }
 
 .content {
@@ -177,11 +186,13 @@ h2 {
     background: #a15500;
     color: #fff;
 }
+
 hr.mini {
     width: 40%;
     float: left;
     margin: 10px;
 }
+
 .post-meta {
     display: block;
     margin-top: 0;
@@ -210,7 +221,7 @@ a.main-title {
     position: relative;
     display: inline-block;
     margin-top: 12px;
-    }
+}
 
 @media only screen and (max-width: 600px) {
     /* Menu code base from http://koen.kivits.com/articles/pure-css-menu/
@@ -289,7 +300,6 @@ textarea {
     font-size: 18px;
 }
 
-
 .new-comment-content {
     width: 400px;
     height: 100px;
@@ -312,6 +322,7 @@ h1 {
     margin-right: auto;
     font-size: 24px;
 }
+
 .comment-content {
     margin-left: 20px;
     margin-right: auto;
@@ -320,6 +331,7 @@ h1 {
     margin-bottom: 10px;
     margin-top: 15px;
 }
+
 input.btn {
     width: auto;
 }

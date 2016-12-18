@@ -22,11 +22,7 @@ Post = dbpost.Post
 class PostPage(basehandler.BlogHandler):
 
     @does_post_exist
-    @is_user
-    def get(self, post_id, post, user):
-        print post_id
-        print post
-        print user
+    def get(self, post_id, post):
         likes = Like.by_post_id(post)
         unlikes = Unlike.by_post_id(post)
         comments = Comment.all_by_post_id(post)
@@ -41,7 +37,7 @@ class PostPage(basehandler.BlogHandler):
 
     @does_post_exist
     @is_user
-    def post(self, user, post_id, post):
+    def post(self, post_id, post, user):
 
 
 #####Getting the information we will need to update the database depending on the users

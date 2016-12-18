@@ -15,11 +15,11 @@ Comment = dbcomment.Comment
 Post = dbpost.Post
 
 class DeleteComment(basehandler.BlogHandler):
-    @does_user_own_comment
-    @does_comment_exist
     @does_post_exist
+    @does_comment_exist
     @is_user
-    def get(self, user, post_id, post, comment_id, comment):
+    @does_user_own_comment
+    def get(self, post_id, comment_id, post, comment, user):
         if comment:
             db.delete(comment)
             self.redirect('/blog/%s' % str(post_id))
@@ -27,11 +27,10 @@ class DeleteComment(basehandler.BlogHandler):
         else:
             self.redirect('/blog')
 
-    @does_user_own_comment
-    @does_comment_exist
     @does_post_exist
+    @does_comment_exist
     @is_user
-    def post(self, user, post_id, post, comment_id, comment):
-        if comment:
-            db.delete(comm)
+    @does_user_own_comment
+    def post(self, post_id, comment_id, post, comment, user):
+            db.delete(comment)
             self.redirect('/blog')

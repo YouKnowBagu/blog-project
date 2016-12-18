@@ -11,16 +11,15 @@ does_comment_exist = decorators.does_comment_exist
 does_user_own_comment = decorators.does_user_own_comment
 
 class EditPost(basehandler.BlogHandler):
-
-    @does_user_own_post
-    @is_user
     @does_post_exist
+    @is_user
+    @does_user_own_post
     def get(self, post_id, post, user):
         self.render("editpost.html", post=post)
 
-    @does_user_own_post
-    @is_user
     @does_post_exist
+    @is_user
+    @does_user_own_post
     def post(self, post_id, post, user):
 #####Grab the post ID to be sure the proper post is updated/edited.
 

@@ -1,46 +1,49 @@
-{% extends "blog.html" %} {% block content %}
-    <h1 class='post-title'>{{post.subject}}</h1>
-    <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
-    <p class="content">{{post.content}}</p>
+{% extends "blog.html" %}
+{% block content %}
+<h1 class='post-title'>{{post.subject}}</h1>
+<small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
+<p class="content">{{post.content}}</p>
 
-<label class="error">{{error}}</label>
-{% if user %}
+<label class="error">{{error}}</label> {% if user %}
 <form method="post">
 
-        {% if post.user.name != user.name %}
+    {% if post.user.name != user.name %}
 
-            <input type="submit" class="btn" name='like' value='&#128077; {{likes}} Likes'>
-            <input type="submit" class="btn" name='unlike' value='&#128078; {{unlikes}} Unlikes'>
-         {% else %}
+    <input type="submit" class="btn" name='like' value='&#128077; {{likes}} Likes'>
+    <input type="submit" class="btn" name='unlike' value='&#128078; {{unlikes}} Unlikes'> {% else %}
 
-            <input type='submit' class="btn" name='edit' value='&#9998; Edit'>
-            <input type="submit" class="btn" name='delete' value="&#9003; Delete">
-         {% endif %}
- </form>
+    <input type='submit' class="btn" name='edit' value='&#9998; Edit'>
+    <input type="submit" class="btn" name='delete' value="&#9003; Delete"> {% endif %}
+</form>
+
 {% endif %}
-<hr>
 
+<hr>
 {% if comment_count == 1 %}
-    <h4 class='comment-count'>{{comment_count}} comment</h4> {% else %}
-    <h4 class='comment-count'>{{comment_count}} comments</h4> {% endif %}
+
+<h4 class='comment-count'>{{comment_count}} comment</h4>
+{% else %}
+<h4 class='comment-count'>{{comment_count}} comments</h4>
+{% endif %}
+
 {% for comment in comments %}
-    <small class=post-meta>Posted by {{comment.user.name}} on {{comment.created.strftime("%b %d, %Y")}}</small>
-    <p class='comment-content'>{{comment.text}}</p>
-    {% if comment.user.name == user.name %}
-    <a class="start atag-btn" href='/blog/{{post.key().id()}}/editcomment/{{comment.key().id()}}'>&#9998; Edit</a>
-    <a class='atag-btn' href="/blog/{{post.key().id()}}/deletecomment/{{comment.key().id()}}">&#9003; Delete</a> {% endif %}
-    <br>
-    <hr class='mini'>
-    <br>
+<small class=post-meta>Posted by {{comment.user.name}} on {{comment.created.strftime("%b %d, %Y")}}</small>
+<p class='comment-content'>{{comment.text}}</p>
+{% if comment.user.name == user.name %}
+<a class="start atag-btn" href='/blog/{{post.key().id()}}/editcomment/{{comment.key().id()}}'>&#9998; Edit</a>
+<a class='atag-btn' href="/blog/{{post.key().id()}}/deletecomment/{{comment.key().id()}}">&#9003; Delete</a>
+{% endif %}
+<br>
+<hr class='mini'>
+<br>
 {% endfor %}
 <label class="error">{{comment_error}}</label><br>
-
- {% if user %}
+{% if user %}
 <form method='post'>
-            <label for='add_comment'>Add Comment</label>
-            <textarea class="new-comment-content" name="comment_text" rows='10' columns='50'>{{comment_text}}</textarea>
-<br><br>
-<input type="submit" class="btn" name="add_comment" value="Post">
+    <label for='add_comment'>Add Comment</label>
+    <textarea class="new-comment-content" name="comment_text" rows='10' columns='50'>{{comment_text}}</textarea>
+    <br><br>
+    <input type="submit" class="btn" name="add_comment" value="Post">
 </form>
 <hr>
 {% endif %}

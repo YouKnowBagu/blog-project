@@ -1,15 +1,14 @@
 {% extends "blog.html" %} {% block content %}
 <h1>Signup</h1>
 <form method="POST">
-	<label class='signup'for="username">Username</label>
-	<input class='text'type="text" name='username' value="{{username}}">
+	<label class='signup' for="username">Username</label>
+	<input class='text' type="text" name='username' value="{{username}}">
 	<label class='error signup'>{{error_username}}{{error}}</label>
 	<br>
 	<label class='signup' for="password">Password</label>
 	<input class='text' type="password" name="password" value=''>
 	<label class='error signup'>{{error_password}}</label>
-<br>
-
+	<br>
 	<label class='signup' for="verify">Verify Password</label>
 	<input class='text' type="password" name="verify" value=''>
 	<label class='error signup'>{{error_verify}}</label>
@@ -17,11 +16,10 @@
 	<input class='text' type="text" name="email" id="email" value=''>
 	<label class='error signup'>{{error_email}}</label><br>
 	<input type="submit" class="btn" value='Signup'><br>
-<hr class='mini'>
+	<hr class='mini'>
 
-
-<p class='inline redirect'> Already registered?</p>
-<input type='submit' class="btn" name='Login' value='Login'>
+	<p class='inline redirect'> Already registered?</p>
+	<input type='submit' class="btn" name='Login' value='Login'>
 </form>
 
 

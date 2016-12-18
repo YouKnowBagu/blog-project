@@ -5,7 +5,7 @@ import user
 class Unlike(db.Model):
     post = db.ReferenceProperty(post.Post, required=True)
     user = db.ReferenceProperty(user.User, required=True)
-    
+
     @classmethod
     def by_post_id(cls, post_id):
         unlike = Unlike.all().filter('post =', post_id)

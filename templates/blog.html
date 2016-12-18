@@ -41,10 +41,10 @@
         <div class="content">
             {% for post in posts %}
             <a href="/blog/{{post.key().id()}}">
-                    <h2 class='post-title'>{{post.subject}}</h2></a>
-                    <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
-                    <p class="content">{{post.content}}</p>
-                    <hr class='mini'>
+                <h2 class='post-title'>{{post.subject}}</h2></a>
+            <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
+            <p class="content">{{post.content}}</p>
+            <hr class='mini'>
             <br>{% endfor %} {% block content %} {% endblock %}
         </div>
     </div>

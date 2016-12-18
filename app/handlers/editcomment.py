@@ -13,19 +13,18 @@ does_user_own_comment = decorators.does_user_own_comment
 
 
 class EditComment(basehandler.BlogHandler):
-    @does_user_own_comment
-    @does_comment_exist
     @does_post_exist
+    @does_comment_exist
     @is_user
-    def get(self, user, post_id, post, comment_id, comment):
-#####Find the comment ID to be updated.
+    @does_user_own_comment
+    def get(self, post_id, comment_id, post, comment, user):
             self.render("editcomment.html", comment=comment)
 
-    @does_user_own_comment
-    @does_comment_exist
     @does_post_exist
+    @does_comment_exist
     @is_user
-    def post(self, user, post_id, post, comment_id, comment):
+    @does_user_own_comment
+    def post(self, post_id, comment_id, post, comment, user):
         if self.request.get("update"):
             content = self.request.get("comment")
 
