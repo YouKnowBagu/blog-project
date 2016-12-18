@@ -1,7 +1,7 @@
 {% extends "blog.html" %} {% block content %}
     <h1 class='post-title'>{{post.subject}}</h1>
     <small class="post-meta">Posted by {{post.user.name}} on {{post.created.strftime("%b %d, %Y")}}</small>
-    <p class="content">{{post.content | safe}}</p>
+    <p class="content">{{post.content}}</p>
 
 <label class="error">{{error}}</label>
 {% if user %}
@@ -17,12 +17,8 @@
             <input type="submit" class="btn" name='delete' value="&#9003; Delete">
          {% endif %}
  </form>
-
-<hr>
-
-
 {% endif %}
-
+<hr>
 
 {% if comment_count == 1 %}
     <h4 class='comment-count'>{{comment_count}} comment</h4> {% else %}
@@ -42,7 +38,7 @@
  {% if user %}
 <form method='post'>
             <label for='add_comment'>Add Comment</label>
-            <textarea class="new-comment-content" name="comment_text" rows='10' columns='50'>{{comment_text | safe}}</textarea>
+            <textarea class="new-comment-content" name="comment_text" rows='10' columns='50'>{{comment_text}}</textarea>
 <br><br>
 <input type="submit" class="btn" name="add_comment" value="Post">
 </form>

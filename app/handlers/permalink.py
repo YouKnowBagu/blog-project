@@ -9,17 +9,24 @@ import app.models.user as dbuser
 import app.models.post as dbpost
 import time
 
+is_user = decorators.is_user
+does_post_exist = decorators.does_post_exist
+does_user_own_post = decorators.does_user_own_post
+
 Like = dblike.Like
 Unlike = dbunlike.Unlike
 Comment = dbcomment.Comment
 User = dbuser.User
 Post = dbpost.Post
 
-
-
 class PostPage(basehandler.BlogHandler):
-    @decorators.does_post_exist
-    def get(self, post_id, post):
+
+    @does_post_exist
+    @is_user
+    def get(self, post_id, post, user):
+        print post_id
+        print post
+        print user
         likes = Like.by_post_id(post)
         unlikes = Unlike.by_post_id(post)
         comments = Comment.all_by_post_id(post)
@@ -31,19 +38,20 @@ class PostPage(basehandler.BlogHandler):
             unlikes=unlikes,
             comments=comments,
             comment_count=comment_count)
-    @decorators.does_post_exist
-    def post(self, post_id, post):
+
+    @does_post_exist
+    @is_user
+    def post(self, user, post_id, post):
 
 
 #####Getting the information we will need to update the database depending on the users
 #####input
         comment_count = Comment.count_by_post_id(post)
         comments = Comment.all_by_post_id(post)
-        user_id = User.by_name(self.user.name)
         likes = Like.by_post_id(post)
         unlikes = Unlike.by_post_id(post)
-        liked = Like.check_like(post, user_id)
-        unliked = Unlike.check_unlike(post, user_id)
+        liked = Like.check_like(post, user)
+        unliked = Unlike.check_unlike(post, user)
 
 #####Due to a python check in the HTML, "Like" and "Unlike" will only appear on
 #####other user's posts.  Likewise, "Edit" and "Delete" will only appear on your own posts
@@ -53,7 +61,7 @@ class PostPage(basehandler.BlogHandler):
         if self.request.get("like"):
             if liked == 0:
                 like = Like(
-                    post=post, user=user_id)
+                    post=post, user=user)
                 like.put()
                 time.sleep(0.1)
                 self.redirect('/blog/%s' % str(post.key().id()))
@@ -72,7 +80,7 @@ class PostPage(basehandler.BlogHandler):
         elif self.request.get("unlike"):
             if unliked == 0:
                 ul = Unlike(
-                    post=post, user=user_id)
+                    post=post, user=user)
                 ul.put()
                 time.sleep(0.1)
                 self.redirect('/blog/%s' % str(post.key().id()))
@@ -93,7 +101,7 @@ class PostPage(basehandler.BlogHandler):
             comment_text = self.request.get("comment_text")
             if comment_text:
                 comment = Comment(
-                    post=post, user=user_id, text=comment_text)
+                    post=post, user=user, text=comment_text)
                 comment.put()
                 time.sleep(0.1)
                 self.redirect('/blog/%s' % str(post.key().id()))
@@ -118,7 +126,7 @@ class PostPage(basehandler.BlogHandler):
 
         elif self.request.get("edit"):
             self.redirect('/blog/editpost/%s' % str(post.key().id()))
-    
+
 #####If the user is logged in and clicks the delete button, delete the post entry from
 #####the database.  NOTE:  This also deletes all comments associated with that post.
         elif self.request.get("delete"):

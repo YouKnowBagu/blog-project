@@ -1,29 +1,29 @@
 import app.helpers.basehandler as basehandler
-import app.helpers.decorators as decorator
+import app.helpers.decorators as decorators
 import app.models.user as dbuser
 import app.models.post as dbpost
 import app.keys.postkey as postkey
 
+is_user = decorators.is_user
 User = dbuser.User
 postkey = postkey.post_key
 
 class NewPost(basehandler.BlogHandler):
-    @decorator.is_user
-    def get(self):
+    @is_user
+    def get(self, user):
             self.render('newpost.html')
 
-    @decorator.is_user
-    def post(self):
+    @is_user
+    def post(self, user):
         subject = self.request.get("subject")
         content = self.request.get("content")
-        user_id = User.by_name(self.user.name)
 
         if subject and content:
             p = dbpost.Post(
                 parent=postkey(),
                 subject=subject,
                 content=content,
-                user=user_id)
+                user=user)
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:

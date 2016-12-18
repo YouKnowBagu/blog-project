@@ -4,7 +4,6 @@ import random
 from app.helpers import basehandler
 from app.security import secret
 import app.handlers.editcomment as editcommenthandler
-import app.handlers.landing as landinghandler
 import app.handlers.login as loginhandler
 import app.handlers.logout as logouthandler
 import app.handlers.frontpage as fronthandler
@@ -14,14 +13,7 @@ import app.handlers.permalink as postpagehandler
 import app.handlers.newpost as newposthandler
 import app.handlers.deletecomment as deletecommenthandler
 
-
-
-
-# def render_post(response,j post):
-#     response.out.write('<b>' + post.subject + '</b><br>')
-#     response.out.write(post.content)
-
-app = webapp2.WSGIApplication([('/', landinghandler.Landing),
+app = webapp2.WSGIApplication([('/', fronthandler.BlogFront),
                             ('/blog/?', fronthandler.BlogFront),
                             ('/blog/newpost', newposthandler.NewPost),
                             ('/login', loginhandler.Login),

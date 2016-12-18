@@ -4,16 +4,24 @@ import permalink
 import app.models.post
 import time
 
+is_user = decorators.is_user
+does_post_exist = decorators.does_post_exist
+does_user_own_post = decorators.does_user_own_post
+does_comment_exist = decorators.does_comment_exist
+does_user_own_comment = decorators.does_user_own_comment
 
 class EditPost(basehandler.BlogHandler):
-    @decorators.does_user_own_post
-    def get(self, post_id, post):
-#####If the user is logged in, take them to the editpost.html page.  otherwise
-#####direct user to login page.
+
+    @does_user_own_post
+    @is_user
+    @does_post_exist
+    def get(self, post_id, post, user):
         self.render("editpost.html", post=post)
 
-    @decorators.does_user_own_post
-    def post(self, post_id, post):
+    @does_user_own_post
+    @is_user
+    @does_post_exist
+    def post(self, post_id, post, user):
 #####Grab the post ID to be sure the proper post is updated/edited.
 
 #####If the user clicks update, first check that the form is completely filled out.

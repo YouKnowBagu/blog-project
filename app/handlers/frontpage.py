@@ -6,5 +6,4 @@ import app.models.post as post
 class BlogFront(basehandler.BlogHandler):
     def get(self):
         posts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC")
-        if posts:
-            self.render("blog.html", posts=posts)
+        self.render("blog.html", posts=posts)
